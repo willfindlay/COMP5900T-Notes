@@ -52,6 +52,10 @@
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \setcounter{secnumdepth}{5}
+\usepackage[T1]{fontenc}
+\usepackage{cmap}
+\input{glyphtounicode}
+\pdfgentounicode=1
 \usepackage[]{biblatex}
 
 \title{COMP5900 OS Security}
@@ -612,18 +616,185 @@ kernel}\label{reference-monitor-access-matrix-security-kernel}}
 \tightlist
 \item
   trust model
+
+  \begin{itemize}
+  \tightlist
+  \item
+    defines the set of software and data we trust to help us enforce our
+    security goals
+  \item
+    we depend on this model to correctly enforce our security goals
+  \end{itemize}
 \item
   trusted computing base
+
+  \begin{itemize}
+  \tightlist
+  \item
+    trust model for an operating system
+  \end{itemize}
+\item
+  TCB should \textbf{ideally} be minimal to the extent that we require
+
+  \begin{itemize}
+  \tightlist
+  \item
+    in practice, this is a wide variety of software
+  \end{itemize}
+\item
+  TCB includes
+
+  \begin{itemize}
+  \tightlist
+  \item
+    all OS code (assuming no boundaries as in a monolithic kernel)
+  \item
+    other software that defines our security goals
+  \item
+    other software that enforces our security goals
+  \item
+    software that bootstraps the above
+  \item
+    software like Xorg that performs actions on behalf of all other
+    processes
+  \end{itemize}
+\item
+  a secure OS developer needs to prove their system has a viable trust
+  model
+
+  \begin{enumerate}
+  \def\labelenumi{(\arabic{enumi})}
+  \tightlist
+  \item
+    TCB must mediate all sensitive operations
+  \item
+    verification of the TCB software and data
+  \item
+    verification of TCB tamper-resistance
+  \end{enumerate}
+\item
+  identifying and verifying TCB is a complex and non-trivial task
 \end{itemize}
 
 \hypertarget{threat-model}{%
 \subsubsection{Threat Model}\label{threat-model}}
+
+\begin{itemize}
+\tightlist
+\item
+  defines a set of operations that an attacker may use to compromise the
+  system
+\item
+  assume a powerful attacker who
+
+  \begin{itemize}
+  \tightlist
+  \item
+    can inject operations from the network
+  \item
+    may be in control of non-TCB applications
+  \end{itemize}
+\item
+  if the attacker finds a vulnerability that violates secrecy or
+  integrity goals, the system is compromised
+\item
+  highlights a critical weakness in commercial OSes
+
+  \begin{itemize}
+  \tightlist
+  \item
+    assume that all software running on behalf of a subject is trusted
+    by the subject
+  \end{itemize}
+\item
+  our task? protect the TCB from threats
+
+  \begin{itemize}
+  \tightlist
+  \item
+    easier said than done
+  \item
+    user interacts with a variety of processes
+  \item
+    users are untrusted
+  \item
+    TCB interacts with a variety of untrusted processes
+  \end{itemize}
+\end{itemize}
 
 \hypertarget{jaeger-chapter-2}{%
 \subsection{Jaeger Chapter 2}\label{jaeger-chapter-2}}
 
 \hypertarget{protection-system}{%
 \subsubsection{Protection System}\label{protection-system}}
+
+\begin{itemize}
+\tightlist
+\item
+  protection system consists of
+
+  \begin{itemize}
+  \tightlist
+  \item
+    protection state
+  \item
+    protection state operations
+  \end{itemize}
+\item
+  protection state
+
+  \begin{itemize}
+  \tightlist
+  \item
+    what operations can subjects perform on objects
+  \end{itemize}
+\item
+  protection state operations
+
+  \begin{itemize}
+  \tightlist
+  \item
+    what operations can modify the protections state
+  \item
+    (this is distinct from the operations that the protection state
+    describes)
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{lampsons-access-matrix}{%
+\paragraph{Lampson's Access Matrix}\label{lampsons-access-matrix}}
+
+\begin{itemize}
+\tightlist
+\item
+  protection state
+
+  \begin{itemize}
+  \tightlist
+  \item
+    rows = subjects
+  \item
+    cols = objects
+  \item
+    select row -\textgreater{} capability list
+  \item
+    select col -\textgreater{} access control list
+  \item
+    each entry specified privileges subject -\textgreater{} object
+  \end{itemize}
+\item
+  protection state operations
+
+  \begin{itemize}
+  \tightlist
+  \item
+    determine which processes can modify cells
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{mandatory-protection-systems}{%
+\paragraph{Mandatory Protection
+Systems}\label{mandatory-protection-systems}}
 
 \hypertarget{reference-monitor}{%
 \subsubsection{Reference Monitor}\label{reference-monitor}}

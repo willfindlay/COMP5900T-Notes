@@ -6,7 +6,11 @@ title: |
 date: \today
 subparagraph: yes
 documentclass: findlay
-#header-includes:
+header-includes:
+    - \usepackage[T1]{fontenc}
+    - \usepackage{cmap}
+    - \input{glyphtounicode}
+    - \pdfgentounicode=1
 classoption:
     - 12pt
 numbersections: true
@@ -96,7 +100,6 @@ citecolor: Green
     - intentionally or otherwise
     - if a program could access full memory of the machine,
       errors could corrupt OS data or code
-<!-- TODO: below points -->
 - supervisor
     - runs with higher permissions in the protection CPU (ring 0, 1, 2)
     - no other program can alter the privileged bit
@@ -202,19 +205,69 @@ citecolor: Green
 ### Trust Model
 
 - trust model
+    - defines the set of software and data we trust to help us enforce our security goals
+    - we depend on this model to correctly enforce our security goals
 - trusted computing base
+    - trust model for an operating system
+- TCB should **ideally** be minimal to the extent that we require
+    - in practice, this is a wide variety of software
+- TCB includes
+    - all OS code (assuming no boundaries as in a monolithic kernel)
+    - other software that defines our security goals
+    - other software that enforces our security goals
+    - software that bootstraps the above
+    - software like Xorg that performs actions on behalf of all other processes
+- a secure OS developer needs to prove their system has a viable trust model
+    (1) TCB must mediate all sensitive operations
+    (1) verification of the TCB software and data
+    (1) verification of TCB tamper-resistance
+- identifying and verifying TCB is a complex and non-trivial task
+
 
 
 
 ### Threat Model
 
-
+- defines a set of operations that an attacker may use to compromise the system
+- assume a powerful attacker who
+    - can inject operations from the network
+    - may be in control of non-TCB applications
+- if the attacker finds a vulnerability that violates secrecy or integrity goals, the system is compromised
+- highlights a critical weakness in commercial OSes
+    - assume that all software running on behalf of a subject is trusted by the subject
+- our task? protect the TCB from threats
+    - easier said than done
+    - user interacts with a variety of processes
+    - users are untrusted
+    - TCB interacts with a variety of untrusted processes
 
 
 
 ## Jaeger Chapter 2
 
 ### Protection System
+
+- protection system consists of
+    - protection state
+    - protection state operations
+- protection state
+    - what operations can subjects perform on objects
+- protection state operations
+    - what operations can modify the protections state
+    - (this is distinct from the operations that the protection state describes)
+
+#### Lampson's Access Matrix
+
+- protection state
+    - rows = subjects
+    - cols = objects
+    - select row -> capability list
+    - select col -> access control list
+    - each entry specified privileges subject -> object
+- protection state operations
+    - determine which processes can modify cells
+
+#### Mandatory Protection Systems
 
 
 
