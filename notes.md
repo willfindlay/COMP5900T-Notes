@@ -156,13 +156,59 @@ citecolor: Green
 
 ## Jaeger Chapter 1
 
+- general-purpose -> complex
+- task-specific -> not so complex
+- general purpose OS are hard to secure because of their complexity
+- ensuring security depends on securing
+    - resource mechanisms
+    - scheduling mechanisms
+
 ### Secure OS
+
+- enforce security goals despite the threats faced by the system
+    - implement security mechanisms to do this
+- secure OS possible?
+    - probably not
+    - a modern OS by definition can probably never be 100% secure
+    - security as a negative goal
+- understanding secure OS requires understanding
+    - security goals
+    - trust model
+    - threat model
+
+
 
 ### Security Goals
 
+- define operations that can be executed by a system while remaining in a secure state
+    - i.e. prevent unauthorized access
+- high level of abstraction
+- define a requirement that the system's design can then satisfy
+- we want to maintain: secrecy, integrity, availability
+    - secrecy = limit read access for objects by subjects
+    - integrity = limit the write access for objects by subjects
+    - availability = limit the resources that a subject may consume (i.e. no DoS)
+- subjects
+    - users, processes, etc.
+- objects
+    - resources of the system that subjects may or may not access in various ways
+    - e.g. files, sockets, memory
+- security goals can be
+    - defined by function (e.g. principle of least privilege)
+    - defined by requirements (e.g. simple-security property)
+
+
+
 ### Trust Model
 
+- trust model
+- trusted computing base
+
+
+
 ### Threat Model
+
+
 
 
 
@@ -170,10 +216,18 @@ citecolor: Green
 
 ### Protection System
 
+
+
 ### Reference Monitor
+
+
 
 ### Secure Operating System Definition
 
+
+
 ### Assessment Criteria
+
+
 
 

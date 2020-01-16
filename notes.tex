@@ -484,14 +484,156 @@ kernel}\label{reference-monitor-access-matrix-security-kernel}}
 \hypertarget{jaeger-chapter-1}{%
 \subsection{Jaeger Chapter 1}\label{jaeger-chapter-1}}
 
+\begin{itemize}
+\tightlist
+\item
+  general-purpose -\textgreater{} complex
+\item
+  task-specific -\textgreater{} not so complex
+\item
+  general purpose OS are hard to secure because of their complexity
+\item
+  ensuring security depends on securing
+
+  \begin{itemize}
+  \tightlist
+  \item
+    resource mechanisms
+  \item
+    scheduling mechanisms
+  \end{itemize}
+\end{itemize}
+
 \hypertarget{secure-os-1}{%
 \subsubsection{Secure OS}\label{secure-os-1}}
 
-\hypertarget{section}{%
-\subsubsection{}\label{section}}
+\begin{itemize}
+\tightlist
+\item
+  enforce security goals despite the threats faced by the system
+
+  \begin{itemize}
+  \tightlist
+  \item
+    implement security mechanisms to do this
+  \end{itemize}
+\item
+  secure OS possible?
+
+  \begin{itemize}
+  \tightlist
+  \item
+    probably not
+  \item
+    a modern OS by definition can probably never be 100\% secure
+  \item
+    security as a negative goal
+  \end{itemize}
+\item
+  understanding secure OS requires understanding
+
+  \begin{itemize}
+  \tightlist
+  \item
+    security goals
+  \item
+    trust model
+  \item
+    threat model
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{security-goals}{%
+\subsubsection{Security Goals}\label{security-goals}}
+
+\begin{itemize}
+\tightlist
+\item
+  define operations that can be executed by a system while remaining in
+  a secure state
+
+  \begin{itemize}
+  \tightlist
+  \item
+    i.e.~prevent unauthorized access
+  \end{itemize}
+\item
+  high level of abstraction
+\item
+  define a requirement that the system's design can then satisfy
+\item
+  we want to maintain: secrecy, integrity, availability
+
+  \begin{itemize}
+  \tightlist
+  \item
+    secrecy = limit read access for objects by subjects
+  \item
+    integrity = limit the write access for objects by subjects
+  \item
+    availability = limit the resources that a subject may consume
+    (i.e.~no DoS)
+  \end{itemize}
+\item
+  subjects
+
+  \begin{itemize}
+  \tightlist
+  \item
+    users, processes, etc.
+  \end{itemize}
+\item
+  objects
+
+  \begin{itemize}
+  \tightlist
+  \item
+    resources of the system that subjects may or may not access in
+    various ways
+  \item
+    e.g.~files, sockets, memory
+  \end{itemize}
+\item
+  security goals can be
+
+  \begin{itemize}
+  \tightlist
+  \item
+    defined by function (e.g.~principle of least privilege)
+  \item
+    defined by requirements (e.g.~simple-security property)
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{trust-model}{%
+\subsubsection{Trust Model}\label{trust-model}}
+
+\begin{itemize}
+\tightlist
+\item
+  trust model
+\item
+  trusted computing base
+\end{itemize}
+
+\hypertarget{threat-model}{%
+\subsubsection{Threat Model}\label{threat-model}}
 
 \hypertarget{jaeger-chapter-2}{%
 \subsection{Jaeger Chapter 2}\label{jaeger-chapter-2}}
+
+\hypertarget{protection-system}{%
+\subsubsection{Protection System}\label{protection-system}}
+
+\hypertarget{reference-monitor}{%
+\subsubsection{Reference Monitor}\label{reference-monitor}}
+
+\hypertarget{secure-operating-system-definition}{%
+\subsubsection{Secure Operating System
+Definition}\label{secure-operating-system-definition}}
+
+\hypertarget{assessment-criteria}{%
+\subsubsection{Assessment Criteria}\label{assessment-criteria}}
 
 \printbibliography
 
