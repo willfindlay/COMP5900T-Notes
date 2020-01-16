@@ -1,0 +1,7 @@
+gh_token: thisisnotsecure
+before_install:
+  - sudo apt-get install pandoc
+script:
+  - .travis/compiler notes.md
+after_success:
+  - .travis/push.sh
