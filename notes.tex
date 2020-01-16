@@ -1,0 +1,498 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames*,x11names*}{xcolor}
+%
+\documentclass[
+  12pt]{findlay}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  filecolor=Maroon,
+  citecolor=Green,
+  urlcolor=blue,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{listings}
+\newcommand{\passthrough}[1]{#1}
+\lstset{defaultdialect=[5.3]Lua}
+\lstset{defaultdialect=[x86masm]Assembler}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+\usepackage[]{biblatex}
+
+\title{COMP5900 OS Security}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+\begin{itemize}
+\tightlist
+\item
+  trusted computing base
+
+  \begin{itemize}
+  \tightlist
+  \item
+    applications that are essential to functioning of the OS
+  \item
+    e.g., passwd
+  \item
+    these would probably be okay to talk about for OS vuln. but
+    kernelspace code is preferred
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{blooms-taxonomy}{%
+\subsection{Bloom's Taxonomy}\label{blooms-taxonomy}}
+
+\begin{itemize}
+\tightlist
+\item
+  course targets top 3 sections (for evaluation)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    create
+  \item
+    evaluate
+  \item
+    analyze
+  \item
+    (some understanding)
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{what-is-an-os}{%
+\subsection{What is an OS?}\label{what-is-an-os}}
+
+\begin{itemize}
+\tightlist
+\item
+  kernel
+\item
+  essential applications (systemd, passwd, etc.)
+\item
+  what does it do?
+
+  \begin{itemize}
+  \tightlist
+  \item
+    scheduling
+  \item
+    network stack
+  \item
+    file systems
+  \item
+    block I/O on disk
+  \item
+    hardware interrupts (e.g.~I/O)
+  \item
+    at least basic access control (memory protection, etc.)
+  \item
+    often runs in supervisor mode (apparently not necessarily? But I
+    don't agree with this\ldots)
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{what-is-the-most-secure-os}{%
+\subsection{What is the Most Secure
+OS?}\label{what-is-the-most-secure-os}}
+
+\begin{itemize}
+\tightlist
+\item
+  probably something task-specific
+\end{itemize}
+
+\hypertarget{group-activity-come-up-with-an-os-less-implementation-for-a-word-processor}{%
+\subsection{Group Activity: Come up with an OS-less implementation for a
+word
+processor}\label{group-activity-come-up-with-an-os-less-implementation-for-a-word-processor}}
+
+\begin{itemize}
+\tightlist
+\item
+  interrupt handling for keyboard
+
+  \begin{itemize}
+  \tightlist
+  \item
+    need at least some basic scheduler that can pause and resume main
+    execution
+  \end{itemize}
+\item
+  interface with monitor for graphical display
+\item
+  block I/O driver for disk
+
+  \begin{itemize}
+  \tightlist
+  \item
+    filesystem to organize data
+  \end{itemize}
+\item
+  hmm\ldots{} this is starting to feel like we just implemented our own
+  task-specific OS
+
+  \begin{itemize}
+  \tightlist
+  \item
+    that's the main takeaway here!
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{secure-os}{%
+\section{Secure OS}\label{secure-os}}
+
+\hypertarget{van-oorschot-chapter-5.0---5.2}{%
+\subsection{Van Oorschot Chapter 5.0 -
+5.2}\label{van-oorschot-chapter-5.0---5.2}}
+
+\hypertarget{intro}{%
+\subsubsection{Intro}\label{intro}}
+
+\begin{itemize}
+\tightlist
+\item
+  early security had same challenges we face today
+
+  \begin{itemize}
+  \tightlist
+  \item
+    protecting programs from others
+  \item
+    restricting access to resources
+  \item
+    ``protection'' means mostly memory access control
+  \end{itemize}
+\item
+  memory is important
+
+  \begin{itemize}
+  \tightlist
+  \item
+    holds data
+  \item
+    holds programs
+  \item
+    I/O devices through memory address and files
+  \item
+    files -\textgreater{} both main memory and secondary storage
+  \end{itemize}
+\item
+  early protection
+
+  \begin{itemize}
+  \tightlist
+  \item
+    virtual addresses
+  \item
+    access control lists
+  \item
+    limited process address space
+  \item
+    these fundamentals are still used today
+  \end{itemize}
+\item
+  Multics
+
+  \begin{itemize}
+  \tightlist
+  \item
+    security very influential in its early design
+  \item
+    original UNIX was heavily based on Multics
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{memory-protection-supervisor-mode-and-accountability}{%
+\subsubsection{Memory protection, supervisor mode, and
+accountability}\label{memory-protection-supervisor-mode-and-accountability}}
+
+\begin{itemize}
+\tightlist
+\item
+  batch processing
+
+  \begin{itemize}
+  \tightlist
+  \item
+    prepare jobs ahead of time and submit them together as a batch job
+  \end{itemize}
+\item
+  time-sharing systems
+
+  \begin{itemize}
+  \tightlist
+  \item
+    allowed shared use of a single computer
+  \item
+    (preferable to batch jobs from a usability standpoint)
+  \item
+    same way single-user computers work today with one user running many
+    programs
+  \end{itemize}
+\item
+  resource conflicts
+
+  \begin{itemize}
+  \tightlist
+  \item
+    processes running simultaneously can try to access the same
+    resources
+  \item
+    intentionally or otherwise
+  \item
+    if a program could access full memory of the machine, errors could
+    corrupt OS data or code
+  \end{itemize}
+\item
+  supervisor
+
+  \begin{itemize}
+  \tightlist
+  \item
+    runs with higher permissions in the protection CPU (ring 0, 1, 2)
+  \item
+    no other program can alter the privileged bit
+  \item
+    a special machine instruction immediately transfers control to the
+    supervisor
+  \end{itemize}
+\item
+  privileged bit
+
+  \begin{itemize}
+  \tightlist
+  \item
+    process is running in supervisor mode
+  \end{itemize}
+\item
+  descriptor register
+
+  \begin{itemize}
+  \tightlist
+  \item
+    holds a memory descriptor that describes base and upper bound
+  \item
+    lowest addressable memory by a process and a number of words from
+    that point that are addressable
+  \end{itemize}
+\item
+  limitations of memory-range based protection
+
+  \begin{itemize}
+  \tightlist
+  \item
+    all-or-nothing mode of control
+  \item
+    either you have full access or no access
+  \item
+    allows full isolation, but not fine-grained sharing
+  \end{itemize}
+\item
+  segment addressing with access permissions
+
+  \begin{itemize}
+  \tightlist
+  \item
+    segment = collection of words representing a logical unit of
+    information
+  \item
+    descriptor segment per process maintained by OS
+
+    \begin{itemize}
+    \tightlist
+    \item
+      holds segment descriptors that define addressable memory and
+      permissions
+    \end{itemize}
+  \item
+    descriptor base register points to memory descriptor of active
+    process
+  \end{itemize}
+\item
+  permissions on virtual segments
+
+  \begin{itemize}
+  \tightlist
+  \item
+    R non-supervisor can read
+  \item
+    W can be written to
+  \item
+    X can be executed
+  \item
+    M run in supervisor mode (if X)
+  \item
+    F all access attempts trap to supervisor
+  \item
+    now the same physical segment can be given different access for
+    different processes
+  \end{itemize}
+\item
+  accountability, UIDs, and principals
+
+  \begin{itemize}
+  \tightlist
+  \item
+    UID (maps users to a unique identifier)
+  \item
+    ``principal'' -\textgreater{} abstracts the entity responsible for
+    code execution from the actual user or program actions
+  \item
+    UID is the primary basis for granting permissions
+  \end{itemize}
+\item
+  roles
+
+  \begin{itemize}
+  \tightlist
+  \item
+    assign distinct UIDs to distinct privileges
+  \item
+    should follow principle of least privilege
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{reference-monitor-access-matrix-security-kernel}{%
+\subsubsection{Reference monitor, access matrix, security
+kernel}\label{reference-monitor-access-matrix-security-kernel}}
+
+\begin{itemize}
+\tightlist
+\item
+  reference monitor
+
+  \begin{itemize}
+  \tightlist
+  \item
+    concept that ``all references by any program to any other program,
+    data, or device are validated''
+  \item
+    conceptualized as one reference monitor, but in practice, would be a
+    lot of reference monitors working together
+  \end{itemize}
+\item
+  access matrix
+
+  \begin{itemize}
+  \tightlist
+  \item
+    2D matrix of subjects, objects
+  \item
+    taking a row (subject) gives a capabilities list
+  \item
+    taking a column (object) gives an access control list
+  \item
+    each intersection in this matrix defines a set of permissions
+  \end{itemize}
+\item
+  security kernel
+
+  \begin{itemize}
+  \tightlist
+  \item
+    reference validation
+  \item
+    audit trails via audit logs (user X did Y at time Z)
+
+    \begin{itemize}
+    \tightlist
+    \item
+      these might not necessarily need to be tamper-proof, depends on
+      needs
+    \end{itemize}
+  \item
+    needs to be:
+
+    \begin{itemize}
+    \tightlist
+    \item
+      tamper-proof
+    \item
+      always invoked (not circumventable)
+    \item
+      verifiable (needs to be minimal / small enough to make this
+      possible )
+    \end{itemize}
+  \end{itemize}
+\item
+  protection mechanisms
+
+  \begin{itemize}
+  \tightlist
+  \item
+    ticket-oriented (capabilities)
+
+    \begin{itemize}
+    \tightlist
+    \item
+      access token allows entry to an event, as long as ticket is
+      authentic
+    \end{itemize}
+  \item
+    id-based
+
+    \begin{itemize}
+    \tightlist
+    \item
+      authorization lists based on ID
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{jaeger-chapter-1}{%
+\subsection{Jaeger Chapter 1}\label{jaeger-chapter-1}}
+
+\hypertarget{secure-os-1}{%
+\subsubsection{Secure OS}\label{secure-os-1}}
+
+\hypertarget{section}{%
+\subsubsection{}\label{section}}
+
+\hypertarget{jaeger-chapter-2}{%
+\subsection{Jaeger Chapter 2}\label{jaeger-chapter-2}}
+
+\printbibliography
+
+\end{document}
