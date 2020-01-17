@@ -333,8 +333,18 @@ citecolor: Green
 
 #### Complete Mediation
 
+- how does the reference monitor interface ensure that all security-sensitive operations are mediated correctly
+- does the reference monitor mediate security-sensitive operations on all system resources
+- how do we verify complete mediation?
+
 #### Tamper Proof
 
+- how does the system protect the reference monitor and its protection system from modification?
+- does the protection system protect TCB programs?
+
 #### Verifiable
+
+- what is the basis for TCB correctness?
+- does the protection system enforce security goals?
 
 
