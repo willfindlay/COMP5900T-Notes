@@ -331,6 +331,10 @@ citecolor: Green
 
 ### Assessment Criteria
 
+#### Complete Mediation
 
+#### Tamper Proof
+
+#### Verifiable
 
 
