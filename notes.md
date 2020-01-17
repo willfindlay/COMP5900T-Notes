@@ -269,13 +269,63 @@ citecolor: Green
 
 #### Mandatory Protection Systems
 
+- we don't want untrusted processes tampering with the protection system's state by adding subjects, objects, operations
+- discretionary access control system (DAC)
+    - an access control system that permits untrusted modification
+    - *safety problem*
+        - how do we ensure that all possible states deriving from initial state will not provide unauthorized access
+- mandatory protection systems / mandatory access control (MAC)
+    - protection system can only be modified by trusted administrators via trusted software
+    - mandatory protection state -> subjects and objects are represented by labels
+        - state describes operations subject labels -> object labels
+    - labeling state
+        - state for mapping subjects and objects to labels
+    - transition state
+        - describes legal ways subjects and objects may be relabeled
+- set of labels being fixed in MAC doesn't mean that set of subjects/objects are fixed
+    - we can dynamically assign labels to created subjects and objects (labeling state)
+    - we can dynamically relabel subjects and objects/resources (transition state)
 
 
 ### Reference Monitor
 
+- classical access enforcement mechanism
+- takes request as input
+- outputs binary response -> is the request authorized or not?
+- main components?
+    - interface
+    - authorization module
+    - policy store
+
+#### Reference Monitor Interface
+
+- defines queries to the reference monitor
+- provides an interface for checking security-sensitive operations
+    - (security-sensitive means it may violate security policy)
+- e.g., consider the `open` system call in UNIX (reference monitor decides what is allowed / disallowed)
+
+#### Authorization Module
+
+- takes interface inputs, converts to a query for the policy store
+- this query is used to check authorization
+- authorization module needs to map PID to subject label and object references to an object label
+- needs to determine the actual operation(s) to authorize
+
+#### Policy Store
+
+- database that holds protection state, labeling state, transition state
+- answers queries from the authorization module
+- has specialized queries for each of the three states
 
 
 ### Secure Operating System Definition
+
+- a secure operating system's access enforcement satisfies the reference monitor model
+- the reference monitor model defines the necessary and sufficient properties of a system that securely enforces MAC
+- three guarantees:
+    (1) complete mediation -> ensure access enforcement for all security-sensitive operations
+    (1) tamper proof -> cannot be tampered with from outside the TCB (untrusted processes)
+    (1) verifiable -> small enough to be subject to testing, analysis
 
 
 

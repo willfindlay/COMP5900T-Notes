@@ -796,12 +796,183 @@ kernel}\label{reference-monitor-access-matrix-security-kernel}}
 \paragraph{Mandatory Protection
 Systems}\label{mandatory-protection-systems}}
 
+\begin{itemize}
+\tightlist
+\item
+  we don't want untrusted processes tampering with the protection
+  system's state by adding subjects, objects, operations
+\item
+  discretionary access control system (DAC)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    an access control system that permits untrusted modification
+  \item
+    \emph{safety problem}
+
+    \begin{itemize}
+    \tightlist
+    \item
+      how do we ensure that all possible states deriving from initial
+      state will not provide unauthorized access
+    \end{itemize}
+  \end{itemize}
+\item
+  mandatory protection systems / mandatory access control (MAC)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    protection system can only be modified by trusted administrators via
+    trusted software
+  \item
+    mandatory protection state -\textgreater{} subjects and objects are
+    represented by labels
+
+    \begin{itemize}
+    \tightlist
+    \item
+      state describes operations subject labels -\textgreater{} object
+      labels
+    \end{itemize}
+  \item
+    labeling state
+
+    \begin{itemize}
+    \tightlist
+    \item
+      state for mapping subjects and objects to labels
+    \end{itemize}
+  \item
+    transition state
+
+    \begin{itemize}
+    \tightlist
+    \item
+      describes legal ways subjects and objects may be relabeled
+    \end{itemize}
+  \end{itemize}
+\item
+  set of labels being fixed in MAC doesn't mean that set of
+  subjects/objects are fixed
+
+  \begin{itemize}
+  \tightlist
+  \item
+    we can dynamically assign labels to created subjects and objects
+    (labeling state)
+  \item
+    we can dynamically relabel subjects and objects/resources
+    (transition state)
+  \end{itemize}
+\end{itemize}
+
 \hypertarget{reference-monitor}{%
 \subsubsection{Reference Monitor}\label{reference-monitor}}
+
+\begin{itemize}
+\tightlist
+\item
+  classical access enforcement mechanism
+\item
+  takes request as input
+\item
+  outputs binary response -\textgreater{} is the request authorized or
+  not?
+\item
+  main components?
+
+  \begin{itemize}
+  \tightlist
+  \item
+    interface
+  \item
+    authorization module
+  \item
+    policy store
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{reference-monitor-interface}{%
+\paragraph{Reference Monitor
+Interface}\label{reference-monitor-interface}}
+
+\begin{itemize}
+\tightlist
+\item
+  defines queries to the reference monitor
+\item
+  provides an interface for checking security-sensitive operations
+
+  \begin{itemize}
+  \tightlist
+  \item
+    (security-sensitive means it may violate security policy)
+  \end{itemize}
+\item
+  e.g., consider the \passthrough{\lstinline!open!} system call in UNIX
+  (reference monitor decides what is allowed / disallowed)
+\end{itemize}
+
+\hypertarget{authorization-module}{%
+\paragraph{Authorization Module}\label{authorization-module}}
+
+\begin{itemize}
+\tightlist
+\item
+  takes interface inputs, converts to a query for the policy store
+\item
+  this query is used to check authorization
+\item
+  authorization module needs to map PID to subject label and object
+  references to an object label
+\item
+  needs to determine the actual operation(s) to authorize
+\end{itemize}
+
+\hypertarget{policy-store}{%
+\paragraph{Policy Store}\label{policy-store}}
+
+\begin{itemize}
+\tightlist
+\item
+  database that holds protection state, labeling state, transition state
+\item
+  answers queries from the authorization module
+\item
+  has specialized queries for each of the three states
+\end{itemize}
 
 \hypertarget{secure-operating-system-definition}{%
 \subsubsection{Secure Operating System
 Definition}\label{secure-operating-system-definition}}
+
+\begin{itemize}
+\tightlist
+\item
+  a secure operating system's access enforcement satisfies the reference
+  monitor model
+\item
+  the reference monitor model defines the necessary and sufficient
+  properties of a system that securely enforces MAC
+\item
+  three guarantees:
+
+  \begin{enumerate}
+  \def\labelenumi{(\arabic{enumi})}
+  \tightlist
+  \item
+    complete mediation -\textgreater{} ensure access enforcement for all
+    security-sensitive operations
+  \item
+    tamper proof -\textgreater{} cannot be tampered with from outside
+    the TCB (untrusted processes)
+  \item
+    verifiable -\textgreater{} small enough to be subject to testing,
+    analysis
+  \end{enumerate}
+\end{itemize}
 
 \hypertarget{assessment-criteria}{%
 \subsubsection{Assessment Criteria}\label{assessment-criteria}}
