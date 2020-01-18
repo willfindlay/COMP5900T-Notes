@@ -347,4 +347,16 @@ citecolor: Green
 - what is the basis for TCB correctness?
 - does the protection system enforce security goals?
 
+# Multics
 
+## Jaeger Chapter 3
+
+### Jaeger 3.1
+
+### Jaeger 3.2
+
+### Jaeger 3.3
+
+## Virtual Memory in Multics (Video)
+
+## Protection in an information processing utility (Graham 1968)
