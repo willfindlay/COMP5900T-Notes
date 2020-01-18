@@ -359,4 +359,15 @@ citecolor: Green
 
 ## Virtual Memory in Multics (Video)
 
+#### Procedure Base Register
+
+#### Important Pointers
+
+- argument pointer
+- base pointer
+- linkage pointer
+- stack pointer
+
+#### Descriptor Base Register
+
 ## Protection in an information processing utility (Graham 1968)
