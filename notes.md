@@ -359,15 +359,42 @@ citecolor: Green
 
 ## Virtual Memory in Multics (Video)
 
-#### Procedure Base Register
+#### Generating Address
 
-#### Important Pointers
+- 36 bits in total
+    - 18 bit segment number
+    - 18 bit word number
+- i.e. $2^{18}$ segments and within each segment $2^{18}$ words
 
-- argument pointer
-- base pointer
-- linkage pointer
-- stack pointer
+#### Instruction Format
 
-#### Descriptor Base Register
+- segment tag
+    - has segment number and word number
+- address
+- operation code
+- external flag
+- addressing mode (2 bits)
+    - corresponds to one of four pointers
+        (1) argument pointer
+        (1) base pointer (bottom of stack frame)
+        (1) linkage pointer
+        (1) stack pointer (top of stack [frame])
+
+#### Segment Number
+
+- can only be changed by ring 0 (supervisor mode) program
+
+#### Word Number
+
+- can be changed by user mode programs
+
+#### Switching Processes
+
+- all the kernel does is substitute a new descriptor base register (with a different segment number)
+
+#### Apple II and Stuff (1982)
+
+- introduced copy protection on memory / disks
+- no virtual memory (they didn't need it, hobbyists didn't need to care about security)
 
 ## Protection in an information processing utility (Graham 1968)

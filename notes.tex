@@ -1034,6 +1034,107 @@ Definition}\label{secure-operating-system-definition}}
 \subsection{Virtual Memory in Multics
 (Video)}\label{virtual-memory-in-multics-video}}
 
+\hypertarget{generating-address}{%
+\paragraph{Generating Address}\label{generating-address}}
+
+\begin{itemize}
+\tightlist
+\item
+  36 bits in total
+
+  \begin{itemize}
+  \tightlist
+  \item
+    18 bit segment number
+  \item
+    18 bit word number
+  \end{itemize}
+\item
+  i.e.~\(2^{18}\) segments and within each segment \(2^{18}\) words
+\end{itemize}
+
+\hypertarget{instruction-format}{%
+\paragraph{Instruction Format}\label{instruction-format}}
+
+\begin{itemize}
+\tightlist
+\item
+  segment tag
+
+  \begin{itemize}
+  \tightlist
+  \item
+    has segment number and word number
+  \end{itemize}
+\item
+  address
+\item
+  operation code
+\item
+  external flag
+\item
+  addressing mode (2 bits)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    corresponds to one of four pointers
+
+    \begin{enumerate}
+    \def\labelenumi{(\arabic{enumi})}
+    \tightlist
+    \item
+      argument pointer
+    \item
+      base pointer (bottom of stack frame)
+    \item
+      linkage pointer
+    \item
+      stack pointer (top of stack {[}frame{]})
+    \end{enumerate}
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{segment-number}{%
+\paragraph{Segment Number}\label{segment-number}}
+
+\begin{itemize}
+\tightlist
+\item
+  can only be changed by ring 0 (supervisor mode) program
+\end{itemize}
+
+\hypertarget{word-number}{%
+\paragraph{Word Number}\label{word-number}}
+
+\begin{itemize}
+\tightlist
+\item
+  can be changed by user mode programs
+\end{itemize}
+
+\hypertarget{switching-processes}{%
+\paragraph{Switching Processes}\label{switching-processes}}
+
+\begin{itemize}
+\tightlist
+\item
+  all the kernel does is substitute a new descriptor base register (with
+  a different segment number)
+\end{itemize}
+
+\hypertarget{apple-ii-and-stuff-1982}{%
+\paragraph{Apple II and Stuff (1982)}\label{apple-ii-and-stuff-1982}}
+
+\begin{itemize}
+\tightlist
+\item
+  introduced copy protection on memory / disks
+\item
+  no virtual memory (they didn't need it, hobbyists didn't need to care
+  about security)
+\end{itemize}
+
 \hypertarget{protection-in-an-information-processing-utility-graham-1968}{%
 \subsection{Protection in an information processing utility (Graham
 1968)}\label{protection-in-an-information-processing-utility-graham-1968}}
