@@ -380,6 +380,42 @@ citecolor: Green
 
 ### Jaeger 3.2
 
+#### Multics Fundamentals
+   
+- Processes are executables(they run program code)
+- All code, data, I/O devices,etc that processes have access to are called segments
+- Segments are organized into a hierarchy of directories that may contain sub-directories or other segments
+- A process's protection domain defines the segments it can access(the segments that can be loaded into its descriptor register and the operations the process can perform on the segments)
+- Segments can be stored in a process's context or secondary storage
+- Each process has its own descriptor segment which contains segment descriptor words that points to the segments the process has access to.
+- If the segment is not in the descriptor segment, it must name the segment(like a file path). If the process had permission then the segment will be added to the descriptor segment.
+
+#### Multics Security Fundamentals
+
+- Suppose the login process for the Multics system
+- A user logins to an answering service. 
+- To authenticate the user, the answering service takes the password segment from the file system by loading the password Segment Descriptor Word(SDW) into its own descriptor segment
+- If authorized, the supervisor implements most of MUltics core functionalities such as authorization, segmentation, I/O, scheduling,etc.
+- The protection rings is what protects the supervisor from other processes.
+- The rings form a hierarchy with ring 0 as the most-privileged. 
+- The supervisor's segments are assigned to ring 0 and 1.
+- Other processes running in higher rings can't modify rings 0 and 1. They would need to invoke the supervisor's code that runs in ring 0.
+- If the user and password match, the answering service creates a user process with the appropriate code and data segments for that user.
+- Each live process segment is accessed by the SDW.
+- The SDW contains the address of the segment in memory, its length, ring brackets, process's permissions, code segments, number of gates for the segment.
+- The rings brackets in the SDW limits access(rwe) based on the ring the process it is currently running in.
+
+#### Multics Protection System Models
+
+
+
+#### Multics Protection System
+
+#### Multics Reference Monitor
+
+####
+
+
 ### Jaeger 3.3
 
 ## Virtual Memory in Multics (Video)
