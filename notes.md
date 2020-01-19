@@ -398,3 +398,8 @@ citecolor: Green
 - no virtual memory (they didn't need it, hobbyists didn't need to care about security)
 
 ## Protection in an information processing utility (Graham 1968)
+
+#### Challenges of Protecting an IPU
+
+- lots of users
+- many users using the system simultaneously
