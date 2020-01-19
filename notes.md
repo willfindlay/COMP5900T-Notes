@@ -372,10 +372,10 @@ citecolor: Green
 - Early timesharing systems could support a few jobs at a time
     - vs batch processing could only do one at a time
 - Project MAC (Multi-Access Computer) aims to create a general-purpose timesharing service to support large number of users simultaneously
-   - This would require several functions such as multiplexing of devices for different processes, scheduling processes, communications between processes, and protection from other processes
+    - This would require several functions such as multiplexing of devices for different processes, scheduling processes, communications between processes, and protection from other processes
 - IBM wasn't interested in the idea, so GE took over
 - Although it was considered a failure (bigger, slower, not reliable), it brought important OS and security features that would lead to UNIX
-- Multics cost around \$7 million (only 80 licenses sold)
+- Multics cost around \$7 million initially (only 80 licenses sold)
 - Last department to use Multics was the Canadian Department of Defense (LOL we got issues boi)
 
 ### Jaeger 3.2
