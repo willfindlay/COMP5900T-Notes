@@ -369,7 +369,8 @@ citecolor: Green
 ### Jaeger 3.1
 
 - Multics emerged from the CTSS (Compatible Timesharing System) system
-- Early timesharing systems can only run one job at a time
+- Early timesharing systems could support a few jobs at a time
+    - vs batch processing could only do one at a time
 - Project MAC (Multi-Access Computer) aims to create a general-purpose timesharing service to support large number of users simultaneously
    - This would require several functions such as multiplexing of devices for different processes, scheduling processes, communications between processes, and protection from other processes
 - IBM wasn't interested in the idea, so GE took over
