@@ -351,6 +351,21 @@ citecolor: Green
 
 ## Jaeger Chapter 3
 
+- Multics = the first modern OS
+- invented many fundamental OS concepts
+    - segmented virtual memory
+    - shared memory for multiprocessors
+    - hierarchical filesystems
+    - online reconfiguration
+    - (many others)
+- invented many fundamental *secure OS* concepts
+    - reference monitor
+    - ring protection model
+    - protection systems
+    - protection domain transactions
+    - multilevel security policies
+    - (many others)
+
 ### Jaeger 3.1
 
 - Multics emerged from the CTSS (Compatible Timesharing System) system
