@@ -407,7 +407,38 @@ citecolor: Green
 
 #### Multics Protection System Models
 
+- ACL: Each object is associated with its own ACL.
+   - Each ACL entry specifies the process with a user identity with operations that it can perform on this object.
+   - Segments can have r,w,e permissions
+   - Directories can have r,w,e,s,m,a
+   - Segments ACL are stored in its parent's directory
+      - This means that checking for permission or any modification to segment ACL is done through the parent directory
+   - If the user with the process has permission for operation on the object, then the reference monitor authorizes the creation of SDW with those permissions.
 
+- Rings and Brackets:
+   - Aside from ACL, Multics limits access based on protection rings as well
+   - Each segment contains a ring bracket that has r,w,e permission of processes on that segment
+      - A segment's bracket defines the ranges of ring that can have certain permission(rwe) to the segment
+   - Suppose a process from ring r wants to access a segment with an access brackets of (r1,r2). We need to follow these rules:
+      - If r<r1, then the process can read and write to the segment
+      - If r1 <= r <= r2, then the process can read the segment only
+      - If r2 < r, then the process has no access to the segment
+   - The above rules ensure that lower rings are more privileged and has more access to segments than higher rings
+   - The call bracket is to control the calls to the code segments.
+   - Suppose a process from ring r wants to invoke a code segment with an access bracket of (r1,r2) and a call bracket of (r2,r3): We need to follow these rules:
+      - If r<r1, then the process can execute the code segment, but there is a ring transition from r to a lower privileged ring r1 <= r' <= r2 specified by the segment
+      - If r1 <= r <= r2, then the process invokes the code segment in its current ring r
+      -  If r2 <= r <= r3, then the process can execute the code segment, there is a ring transition from r to the higher privileged ring r' if authorized by the gates in the code segment's SDW
+      - If r3 < r, then the process cannot invoke the code segment
+   - Call brackets does not only define execute privileges but for defining transition rules as well. It is the only way to transition state in Multics.
+   
+- Multilevel Security
+   - Each directory stores a mapping from each segment to a secrecy level.
+   - Multics also stores an association between each process and its secrecy level.
+   - A request is authorized if one of 3 conditions are met.
+      - Write: The process requests write access only and the level of the segment/directory is greater than or equal to the level of the process.
+      - Read: The process requests read access only and the level of the segment/directory is less than or equal to the level of the process.
+      - Read/Write: The process requests read and write access and the level of the segment/directory is the same as the process or the process is designated as trusted
 
 #### Multics Protection System
 
