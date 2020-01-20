@@ -428,7 +428,7 @@ citecolor: Green
    - Suppose a process from ring r wants to invoke a code segment with an access bracket of (r1,r2) and a call bracket of (r2,r3): We need to follow these rules:
       - If r<r1, then the process can execute the code segment, but there is a ring transition from r to a lower privileged ring r1 <= r' <= r2 specified by the segment
       - If r1 <= r <= r2, then the process invokes the code segment in its current ring r
-      -  If r2 <= r <= r3, then the process can execute the code segment, there is a ring transition from r to the higher privileged ring r' if authorized by the gates in the code segment's SDW
+      - If r2 <= r <= r3, then the process can execute the code segment, there is a ring transition from r to the higher privileged ring r' if authorized by the gates in the code segment's SDW
       - If r3 < r, then the process cannot invoke the code segment
    - Call brackets does not only define execute privileges but for defining transition rules as well. It is the only way to transition state in Multics.
    
@@ -442,12 +442,71 @@ citecolor: Green
 
 #### Multics Protection System
 
+- Multic's protection consists of these 3 policies:
+   - Requested operation is READ:
+      - ACL checks if user has read access
+      - MLS policy checks to verify that the object's secrecy level is dominated by or equal to the process
+      - The access bracket is checked to ensure the process has access to the object's segment
+   - Requested operation is WRITE:
+      - ACL checks if user has write access
+      - MLS policy checks to verify that the object's secrecy level dominates or equal to the process
+      - The access bracket must allow the current ring write access
+   - Requested operation is EXECUTE:
+      - Similar to write operation
+      - The process must have execute permission in the segment's ACL
+      - MLS policy must allow for reading the segment
+      - Call bracket is used instead of access bracket, and call bracket must allow execution
+      - The request may result in protection domain transition
+         - Transition from process's current ring r to the ring specified by the segment in the call bracket r'
+         - When a process invokes a code segment with a call bracket with r < r1:
+            - The process must transition to r'(a lower privileged ring)
+         - When a process invokes a code segment with a call bracket where r2 <= r <= r3:
+            - The process transitions to r' by using one of the gates in the code segment as entry point
+   - From Chapter 2 we have seen that a secure protection system requires a protection state, a labeling state, and a transition state. Multics built their protection state based on the 3 models.
+
 #### Multics Reference Monitor
 
-####
-
+- Multic's reference monitor was implemented by the supervisor.
+- Each Multics instruction either accesses a segment via a directory or via a SDW, so authorization is performed on each instruction
+- The supervisor also performs protection domain transitions as mentioned above
+- A transition that requires to go through a gate segment needs to verify the following:
+   - the number of arguments expected
+   - the data type on each argument
+   - access requirement for each argument(read, read/write)
+- The gate segment is also known as the gatekeeper
+- When we return from the more privileged ring to a lower privileged ring, we need to ensure that no information is leaked.
+   - The supervisor copies arguments from its segment to another segment(accesible to the called procesure).
+      - Copying is necessary because we don't want unauthorized access from the calling procedure
+      - The caller must also be careful not to copy unauthorized information(private keys), since the less-privileged code may be able to use to impersonate the higher-privileged code
+   - Multics allows the caller to provide a gate for return(return gate).
+      - Multiple calls can result in a stack of return gates, so SDW is not suitable for return gates
+      - The supervisor must maintain this stack of return gates for each process.
+- The fundamentals of the reference monitor is implemented in ring 0
+   - Other utility such as file system search utility are in ring 1. determination of a directory or segment from a name is performed there, but authorization of whether this access is permitted is done in ring 0
 
 ### Jaeger 3.3
+
+#### Complete Mediation
+- How does the reference monitor interface ensure that all security-sensitive operations are mediated correctly?
+   - Multics provides complete mediation at the segment level.
+- Does the reference monitor interface mediate security-sensitive operations on all system resources?
+   - Multics mediates each segment access at the instruction level,Multics mediates memory access completely. Multics also mediates ring transitions, in both directions. Thus, the reference monitor provides mediation at memory and ring levels.
+- How do we verify that the reference monitor interface provides complete mediation?
+   - To verify complete mediation, we need to verify that ring transitions and segment accesses are mediated correctly. These operations are well-defined, so it is straightforward to determine that mediation occurs at these operations.
+
+#### Tamper-proof
+- How does the system protect the reference monitor, including its protection system from modification?
+   - Multic's reference monitor is implemented by ring 0 procedures. Ring 0 procedures are protected by a combination of protection ring isolations and system-defined ring bracket policy. The ring bracket policy prevent processes outside of ring 0 from reading or writing reference monitor code or state directly.
+- Does the protection system protect all the trusted computing base programs?
+   - Multics TCB consists of the supervisor(ring 0) and from ring 1 to ring 3. Ring 4 and above are standard user processing. Rings 0 to 3 can be considered part of the TCB. 
+
+#### Verifiable
+- What is basis for the correctness of the system’s trusted computing base?
+   - The implementation of the Multics TCB is too large to be formally verified. This goal was not achieved even though they did try to aim to minimize the implementation as much as possible
+- Does the protection system enforce the system’s security goals?
+   - Protection state: MLS secrecy protection is enforced as long as the TCB is not compromised
+   - Labeling state: Verifying the correct labeling of segments and processes is challenging, since most of the labeling is done manually. The Multics policy does not explicitly state how new processes and segments are labeled
+   - Transition state: Permits code from a less-privileged ring to transfer control to code in a more-privileged ring through either gates or return gates based on the call bracket rules. The security of these transitions depends on the correctness of the gates
 
 ## Virtual Memory in Multics (Video)
 
