@@ -11,6 +11,7 @@ header-includes:
     - \usepackage{cmap}
     - \input{glyphtounicode}
     - \pdfgentounicode=1
+    - \usepackage{enumitem}
 classoption:
     - 12pt
 numbersections: true
@@ -379,7 +380,7 @@ citecolor: Green
 ### Jaeger 3.2
 
 #### Multics Fundamentals
-   
+
 - Processes are executables(they run program code)
 - All code, data, I/O devices,etc that processes have access to are called segments
 - Segments are organized into a hierarchy of directories that may contain sub-directories or other segments
@@ -391,11 +392,11 @@ citecolor: Green
 #### Multics Security Fundamentals
 
 - Suppose the login process for the Multics system
-- A user logins to an answering service. 
+- A user logins to an answering service.
 - To authenticate the user, the answering service takes the password segment from the file system by loading the password Segment Descriptor Word(SDW) into its own descriptor segment
 - If authorized, the supervisor implements most of MUltics core functionalities such as authorization, segmentation, I/O, scheduling,etc.
 - The protection rings is what protects the supervisor from other processes.
-- The rings form a hierarchy with ring 0 as the most-privileged. 
+- The rings form a hierarchy with ring 0 as the most-privileged.
 - The supervisor's segments are assigned to ring 0 and 1.
 - Other processes running in higher rings can't modify rings 0 and 1. They would need to invoke the supervisor's code that runs in ring 0.
 - If the user and password match, the answering service creates a user process with the appropriate code and data segments for that user.
@@ -429,7 +430,7 @@ citecolor: Green
       - If r2 <= r <= r3, then the process can execute the code segment, there is a ring transition from r to the higher privileged ring r' if authorized by the gates in the code segment's SDW
       - If r3 < r, then the process cannot invoke the code segment
    - Call brackets does not only define execute privileges but for defining transition rules as well. It is the only way to transition state in Multics.
-   
+
 - Multilevel Security
    - Each directory stores a mapping from each segment to a secrecy level.
    - Multics also stores an association between each process and its secrecy level.
@@ -496,7 +497,7 @@ citecolor: Green
 - How does the system protect the reference monitor, including its protection system from modification?
    - Multic's reference monitor is implemented by ring 0 procedures. Ring 0 procedures are protected by a combination of protection ring isolations and system-defined ring bracket policy. The ring bracket policy prevent processes outside of ring 0 from reading or writing reference monitor code or state directly.
 - Does the protection system protect all the trusted computing base programs?
-   - Multics TCB consists of the supervisor(ring 0) and from ring 1 to ring 3. Ring 4 and above are standard user processing. Rings 0 to 3 can be considered part of the TCB. 
+   - Multics TCB consists of the supervisor(ring 0) and from ring 1 to ring 3. Ring 4 and above are standard user processing. Rings 0 to 3 can be considered part of the TCB.
 
 #### Verifiable
 - What is basis for the correctness of the system’s trusted computing base?
