@@ -327,8 +327,6 @@ citecolor: Green
     (1) tamper proof -> cannot be tampered with from outside the TCB (untrusted processes)
     (1) verifiable -> small enough to be subject to testing, analysis
 
-
-
 ### Assessment Criteria
 
 #### Complete Mediation
@@ -424,7 +422,18 @@ citecolor: Green
 
 ## Protection in an information processing utility (Graham 1968)
 
-#### Challenges of Protecting an IPU
+#### Challenges of protecting an IPU
 
 - lots of users
 - many users using the system simultaneously
+- more than one CPU, running multiple programs at a time
+- sharing and not sharing
+    - system could be used for applications that have sensitive data
+    - system could also be used by applications that do want to share their memory with others (maybe on parts of it)
+
+#### Why do we need protection?
+
+- protection is not strictly necessary for single-user applications, but still desirable
+    - aid debugging
+    - prevent application errors from propagating (good even in the benign case)
+    - (localizes the source of the original error)
