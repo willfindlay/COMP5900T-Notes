@@ -1745,23 +1745,21 @@ IPU}\label{challenges-of-protecting-an-ipu}}
   \end{itemize}
 \end{itemize}
 
-\hypertarget{satisfactory-protection-mechanism-properties}{%
-\paragraph{Satisfactory Protection Mechanism
-Properties}\label{satisfactory-protection-mechanism-properties}}
+\hypertarget{defining-satisfactory-and-unsatisfactory-protection-mechanisms}{%
+\subsubsection{Defining Satisfactory and Unsatisfactory Protection
+Mechanisms}\label{defining-satisfactory-and-unsatisfactory-protection-mechanisms}}
+
+\hypertarget{protection-mechanisms-before-multics-unsatisfactory}{%
+\paragraph{Protection Mechanisms Before Multics
+(Unsatisfactory)}\label{protection-mechanisms-before-multics-unsatisfactory}}
 
 \begin{itemize}
 \tightlist
 \item
-  in the past (relative to this paper!)
-
-  \begin{itemize}
-  \tightlist
-  \item
-    mode switch for supervisor instructions (paper calls them master and
-    slave)
-  \item
-    memory bounds register (descriptor register)
-  \end{itemize}
+  mode switch for supervisor instructions (paper calls them master and
+  slave)
+\item
+  memory bounds register (descriptor register)
 \item
   what is included in privileged instructions?
 
@@ -1784,6 +1782,135 @@ Properties}\label{satisfactory-protection-mechanism-properties}}
     but it cannot protect data in active memory\ldots{} we need the
     memory bounds register for that
   \end{itemize}
+\item
+  what was wrong with the original solution?
+
+  \begin{itemize}
+  \tightlist
+  \item
+    all or nothing
+  \item
+    either have all privileges, or have none
+  \item
+    \textbf{unsatisfactory} for an IPU
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{satisfactory-protection-mechanism-properties}{%
+\paragraph{Satisfactory Protection Mechanism
+Properties}\label{satisfactory-protection-mechanism-properties}}
+
+\begin{itemize}
+\tightlist
+\item
+  isolation
+
+  \begin{itemize}
+  \tightlist
+  \item
+    should be possible to completely isolate one process from another
+  \end{itemize}
+\item
+  sharing
+
+  \begin{itemize}
+  \tightlist
+  \item
+    should be easy and convenient to select which parts of a process
+    should be shared with another process
+  \end{itemize}
+\item
+  layering
+
+  \begin{itemize}
+  \tightlist
+  \item
+    single process layers of protection should be available to system
+    and user
+  \item
+    ``need to know'' principle should be easily applicable to a
+    reasonable degree
+  \end{itemize}
+\item
+  calling procedures across layers
+
+  \begin{itemize}
+  \tightlist
+  \item
+    should be do-able without any special programming
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{the-abstract-model}{%
+\subsubsection{The Abstract Model}\label{the-abstract-model}}
+
+\hypertarget{segment-descriptor-isolation-sharing}{%
+\paragraph{Segment Descriptor (Isolation,
+Sharing)}\label{segment-descriptor-isolation-sharing}}
+
+\begin{itemize}
+\tightlist
+\item
+  pages are invisible to the user (managed by hardware)
+\item
+  segments contain words of arbitrary length stored in pages
+\item
+  addressing is done by \((S,W)\) where \(S\) is segment number and
+  \(W\) is word number
+\item
+  descriptor needs to have
+
+  \begin{itemize}
+  \tightlist
+  \item
+    beginning of segment
+  \item
+    length
+  \item
+    access indicator
+  \item
+    (ring number)
+  \end{itemize}
+\item
+  every processor has exactly one segment descriptor
+\end{itemize}
+
+\hypertarget{location-counter}{%
+\paragraph{Location Counter}\label{location-counter}}
+
+\begin{itemize}
+\tightlist
+\item
+  what does this do? unclear
+\item
+  needs to have
+
+  \begin{itemize}
+  \tightlist
+  \item
+    (ring number)
+  \item
+    procedure segmnt number
+  \item
+    word number
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{protection-rings-layering}{%
+\paragraph{Protection Rings
+(Layering)}\label{protection-rings-layering}}
+
+\begin{itemize}
+\tightlist
+\item
+  up to \(m\) rings
+\item
+  ring 0 is most privileged, ring \(m\) is least privileged
+\item
+  every segment is assigned to one and only one ring
+\item
+  a process running in ring \(i\) has no access to any segment in ring
+  \(j < i\)
 \end{itemize}
 
 \printbibliography

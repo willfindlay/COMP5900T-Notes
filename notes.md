@@ -569,14 +569,75 @@ citecolor: Green
     - we need to protect this from being tampered with
     - user information stored on multi-user system must be protected for privacy reasons
 
-#### Satisfactory Protection Mechanism Properties
+### Defining Satisfactory and Unsatisfactory Protection Mechanisms
 
-- in the past (relative to this paper!)
-    - mode switch for supervisor instructions (paper calls them master and slave)
-    - memory bounds register (descriptor register)
+#### Protection Mechanisms Before Multics (Unsatisfactory)
+
+- mode switch for supervisor instructions (paper calls them master and slave)
+- memory bounds register (descriptor register)
 - what is included in privileged instructions?
     - I/O instructions
     - changing mode switch
     - changing contents of memory bounds register
 - mode switch can protect information on storage media that is not actively being looked at
     - but it cannot protect data in active memory... we need the memory bounds register for that
+- what was wrong with the original solution?
+    - all or nothing
+    - either have all privileges, or have none
+    - **unsatisfactory** for an IPU
+
+#### Satisfactory Protection Mechanism Properties
+
+<!--
+- finer-grained control over memory access
+    - per-segment access rights
+    - a variety of access rights rather than just one
+    - virtual memory to permit different access from different users to the same physical segment
+- adheres to the "need to know" principle
+    - each procedure has minimum access required to get its job done
+- system should be highly compartmentalized
+    - easier to identify unwanted behavior
+    - easier to maintain
+    - minimize the extent of damage caused by hardware/software failure
+- layers of protection
+    - allows some users to access a subset of the system
+    - perfect for allowing users to use a subsystem provided by another more privileged user
+    -->
+- isolation
+    - should be possible to completely isolate one process from another
+- sharing
+    - should be easy and convenient to select which parts of a process should be shared with another process
+- layering
+    - single process layers of protection should be available to system and user
+    - "need to know" principle should be easily applicable to a reasonable degree
+- calling procedures across layers
+    - should be do-able without any special programming
+
+### The Abstract Model
+
+#### Segment Descriptor (Isolation, Sharing)
+
+- pages are invisible to the user (managed by hardware)
+- segments contain words of arbitrary length stored in pages
+- addressing is done by $(S,W)$ where $S$ is segment number and $W$ is word number
+- descriptor needs to have
+    - beginning of segment
+    - length
+    - access indicator
+    - (ring number)
+- every processor has exactly one segment descriptor
+
+#### Location Counter
+
+- what does this do? unclear
+- needs to have
+    - (ring number)
+    - procedure segmnt number
+    - word number
+
+#### Protection Rings (Layering)
+
+- up to $m$ rings
+- ring 0 is most privileged, ring $m$ is least privileged
+- every segment is assigned to one and only one ring
+- a process running in ring $i$ has no access to any segment in ring $j < i$
