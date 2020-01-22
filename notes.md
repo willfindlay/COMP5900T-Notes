@@ -564,3 +564,19 @@ citecolor: Green
     - aid debugging
     - prevent application errors from propagating (good even in the benign case)
     - (localizes the source of the original error)
+- more than one user makes things much more interesting
+    - even simplest multi-user systems share the supervisor program (i.e. reference monitor state) between all users
+    - we need to protect this from being tampered with
+    - user information stored on multi-user system must be protected for privacy reasons
+
+#### Satisfactory Protection Mechanism Properties
+
+- in the past (relative to this paper!)
+    - mode switch for supervisor instructions (paper calls them master and slave)
+    - memory bounds register (descriptor register)
+- what is included in privileged instructions?
+    - I/O instructions
+    - changing mode switch
+    - changing contents of memory bounds register
+- mode switch can protect information on storage media that is not actively being looked at
+    - but it cannot protect data in active memory... we need the memory bounds register for that

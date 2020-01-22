@@ -1729,6 +1729,61 @@ IPU}\label{challenges-of-protecting-an-ipu}}
   \item
     (localizes the source of the original error)
   \end{itemize}
+\item
+  more than one user makes things much more interesting
+
+  \begin{itemize}
+  \tightlist
+  \item
+    even simplest multi-user systems share the supervisor program
+    (i.e.~reference monitor state) between all users
+  \item
+    we need to protect this from being tampered with
+  \item
+    user information stored on multi-user system must be protected for
+    privacy reasons
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{satisfactory-protection-mechanism-properties}{%
+\paragraph{Satisfactory Protection Mechanism
+Properties}\label{satisfactory-protection-mechanism-properties}}
+
+\begin{itemize}
+\tightlist
+\item
+  in the past (relative to this paper!)
+
+  \begin{itemize}
+  \tightlist
+  \item
+    mode switch for supervisor instructions (paper calls them master and
+    slave)
+  \item
+    memory bounds register (descriptor register)
+  \end{itemize}
+\item
+  what is included in privileged instructions?
+
+  \begin{itemize}
+  \tightlist
+  \item
+    I/O instructions
+  \item
+    changing mode switch
+  \item
+    changing contents of memory bounds register
+  \end{itemize}
+\item
+  mode switch can protect information on storage media that is not
+  actively being looked at
+
+  \begin{itemize}
+  \tightlist
+  \item
+    but it cannot protect data in active memory\ldots{} we need the
+    memory bounds register for that
+  \end{itemize}
 \end{itemize}
 
 \printbibliography
