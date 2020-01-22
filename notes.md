@@ -629,10 +629,10 @@ citecolor: Green
 
 #### Location Counter
 
-- what does this do? unclear
+- keeps track of next available location for memory assignment in current segment
 - needs to have
     - (ring number)
-    - procedure segmnt number
+    - procedure segment number
     - word number
 
 #### Protection Rings (Layering)
