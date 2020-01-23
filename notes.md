@@ -63,7 +63,7 @@ citecolor: Green
 - hmm... this is starting to feel like we just implemented our own task-specific OS
     - that's the main takeaway here!
 
-# Secure OS
+# Defining a Secure OS
 
 ## Van Oorschot Chapter 5.0 - 5.2
 
