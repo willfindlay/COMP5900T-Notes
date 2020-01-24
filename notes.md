@@ -310,7 +310,7 @@ citecolor: Green
 - takes interface inputs, converts to a query for the policy store
 - this query is used to check authorization
 - authorization module needs to map PID to subject label and object references to an object label
-- needs to determine the actual operation(s) to authorize
+- needs to determine the actual operation (s) to authorize
 
 #### Policy Store
 
@@ -384,63 +384,75 @@ citecolor: Green
 
 #### Multics Fundamentals
 
-- processes are executables(they run program code)
+- processes are executables (they run program code)
 - all code, data, I/O devices,etc that processes have access to are called segments
 - hierarchy of directories that may contain
     - sub-directories
     - segments
-- a process's protection domain defines the segments it can access(the segments that can be loaded into its descriptor register and the operations the process can perform on the segments)
+- a process's protection domain defines the segments it can access and what operations it can perform on them
 - segments can be stored in a process's context or secondary storage
-- each process has its own descriptor segment which contains segment descriptor words that points to the segments the process has access to.
-- if the segment is not in the descriptor segment, it must name the segment(like a file path). If the process had permission then the segment will be added to the descriptor segment.
+- each process has its own descriptor segment which contains segment descriptor words that point to the segments the process has access to.
+- if the segment is not in the descriptor segment, it must name the segment (like a file path)
+    - if the process has permission, the segment is added to its descriptor segment
+- descriptor segment has a set of *segment descriptor words* that refer to all directly accessible segments
 
 #### Multics Security Fundamentals
 
-- suppose the login process for the Multics system
-- a user logins to an answering service.
-- to authenticate the user, the answering service takes the password segment from the file system by loading the password Segment Descriptor Word(SDW) into its own descriptor segment
-- if authorized, the supervisor implements most of Multics core functionalities such as authorization, segmentation, I/O, scheduling,etc.
-- the protection rings is what protects the supervisor from other processes.
-- the rings form a hierarchy with ring 0 as the most-privileged.
-- the supervisor's segments are assigned to ring 0 and 1.
-- other processes running in higher rings can't modify rings 0 and 1. They would need to invoke the supervisor's code that runs in ring 0.
-- if the user and password match, the answering service creates a user process with the appropriate code and data segments for that user.
-- each live process segment is accessed by the SDW.
-- the SDW contains the address of the segment in memory, its length, ring brackets, process's permissions, code segments, number of gates for the segment.
-- the rings brackets in the SDW limits access(rwe) based on the ring the process it is currently running in.
+- *answering service* process implements the login system
+    - to authenticate the user, answering service loads password SDW into its own descriptor segment
+    - Multics supervisor must authorize this
+- *supervisor* implements all security-critical functionality such as authorization, segmentation, I/O, scheduling, etc.
+- *protection rings* protect the supervisor from other processes
+    - the rings form a hierarchy with ring 0 as the most-privileged
+    - the supervisor's segments are assigned to ring 0 and 1
+    - higher rings cannot access lower rings
+- if the user and password match, the answering service creates a user process with the appropriate code and data segments for that user
+- each live process segment is accessed by the SDW
+- the SDW contains
+    - the address of the segment in memory
+    - its length
+    - ring brackets
+    - process's permissions
+    - number of gates for the segment (code segments only)
+- ring brackets
+    - define access according to process rings
+    - code segment also has a call bracket that defines whether it can be run
+    - also define access to protection domain transition rules
 
 #### Multics Protection System Models
 
-- ACL: Each object is associated with its own ACL.
-   - each ACL entry specifies the process with a user identity with operations that it can perform on this object.
-   - segments can have r,w,e permissions
-   - directories can have r,w,e,s,m,a
-   - segments ACL are stored in its parent's directory
-      - this means that checking for permission or any modification to segment ACL is done through the parent directory
-   - if the user with the process has permission for operation on the object, then the reference monitor authorizes the creation of SDW with those permissions.
-- Rings and Brackets:
-   - aside from ACL, Multics limits access based on protection rings as well
-   - each segment contains a ring bracket that has r,w,e permission of processes on that segment
-      - a segment's bracket defines the ranges of ring that can have certain permission(rwe) to the segment
-   - suppose a process from ring r wants to access a segment with an access brackets of (r1,r2). We need to follow these rules:
-      - if r<r1, then the process can read and write to the segment
-      - if r1 <= r <= r2, then the process can read the segment only
-      - if r2 < r, then the process has no access to the segment
-   - the above rules ensure that lower rings are more privileged and has more access to segments than higher rings
-   - the call bracket is to control the calls to the code segments.
-   - suppose a process from ring r wants to invoke a code segment with an access bracket of (r1,r2) and a call bracket of (r2,r3): We need to follow these rules:
-      - if r<r1, then the process can execute the code segment, but there is a ring transition from r to a lower privileged ring r1 <= r' <= r2 specified by the segment
-      - if r1 <= r <= r2, then the process invokes the code segment in its current ring r
-      - if r2 <= r <= r3, then the process can execute the code segment, there is a ring transition from r to the higher privileged ring r' if authorized by the gates in the code segment's SDW
-      - if r3 < r, then the process cannot invoke the code segment
-   - call brackets does not only define execute privileges but for defining transition rules as well. It is the only way to transition state in Multics.
-- Multilevel Security
-   - each directory stores a mapping from each segment to a secrecy level.
-   - multics also stores an association between each process and its secrecy level.
-   - a request is authorized if one of 3 conditions are met.
-      - write: The process requests write access only and the level of the segment/directory is greater than or equal to the level of the process.
-      - read: The process requests read access only and the level of the segment/directory is less than or equal to the level of the process.
-      - read/Write: The process requests read and write access and the level of the segment/directory is the same as the process or the process is designated as trusted
+##### Access Control Lists (ACLs)
+- each ACL entry specifies the process with a user identity with operations that it can perform on this object.
+- segments can have r,w,e permissions
+- directories can have r,w,e,s,m,a
+- segments ACL are stored in its parent's directory
+  - this means that checking for permission or any modification to segment ACL is done through the parent directory
+- if the user with the process has permission for operation on the object, then the reference monitor authorizes the creation of SDW with those permissions.
+
+##### Rings and Brackets
+- aside from ACL, Multics limits access based on protection rings as well
+- each segment contains a ring bracket that has r,w,e permission of processes on that segment
+  - a segment's bracket defines the ranges of ring that can have certain permission (rwe) to the segment
+- suppose a process from ring r wants to access a segment with an access brackets of (r1,r2). We need to follow these rules:
+  - if r<r1, then the process can read and write to the segment
+  - if r1 <= r <= r2, then the process can read the segment only
+  - if r2 < r, then the process has no access to the segment
+- the above rules ensure that lower rings are more privileged and has more access to segments than higher rings
+- the call bracket is to control the calls to the code segments.
+- suppose a process from ring r wants to invoke a code segment with an access bracket of (r1,r2) and a call bracket of (r2,r3): We need to follow these rules:
+  - if r<r1, then the process can execute the code segment, but there is a ring transition from r to a lower privileged ring r1 <= r' <= r2 specified by the segment
+  - if r1 <= r <= r2, then the process invokes the code segment in its current ring r
+  - if r2 <= r <= r3, then the process can execute the code segment, there is a ring transition from r to the higher privileged ring r' if authorized by the gates in the code segment's SDW
+  - if r3 < r, then the process cannot invoke the code segment
+- call brackets does not only define execute privileges but for defining transition rules as well. It is the only way to transition state in Multics.
+
+##### Multilevel Security
+- each directory stores a mapping from each segment to a secrecy level.
+- multics also stores an association between each process and its secrecy level.
+- a request is authorized if one of 3 conditions are met.
+  - write: The process requests write access only and the level of the segment/directory is greater than or equal to the level of the process.
+  - read: The process requests read access only and the level of the segment/directory is less than or equal to the level of the process.
+  - read/Write: The process requests read and write access and the level of the segment/directory is the same as the process or the process is designated as trusted
 
 #### Multics Protection System
 
@@ -474,13 +486,13 @@ citecolor: Green
 - a transition that requires to go through a gate segment needs to verify the following:
    - the number of arguments expected
    - the data type on each argument
-   - access requirement for each argument(read, read/write)
+   - access requirement for each argument (read, read/write)
 - the gate segment is also known as the gatekeeper
 - when we return from the more privileged ring to a lower privileged ring, we need to ensure that no information is leaked.
-   - the supervisor copies arguments from its segment to another segment(accesible to the called procesure).
+   - the supervisor copies arguments from its segment to another segment (accessible to the called procedure).
       - copying is necessary because we don't want unauthorized access from the calling procedure
-      - the caller must also be careful not to copy unauthorized information(private keys), since the less-privileged code may be able to use to impersonate the higher-privileged code
-   - Multics allows the caller to provide a gate for return(return gate).
+      - the caller must also be careful not to copy unauthorized information (private keys), since the less-privileged code may be able to use to impersonate the higher-privileged code
+   - Multics allows the caller to provide a gate for return (return gate).
       - multiple calls can result in a stack of return gates, so SDW is not suitable for return gates
       - the supervisor must maintain this stack of return gates for each process.
 - the fundamentals of the reference monitor is implemented in ring 0
@@ -500,7 +512,7 @@ citecolor: Green
 - how does the system protect the reference monitor, including its protection system from modification?
    - Multic's reference monitor is implemented by ring 0 procedures. Ring 0 procedures are protected by a combination of protection ring isolations and system-defined ring bracket policy. The ring bracket policy prevent processes outside of ring 0 from reading or writing reference monitor code or state directly.
 - does the protection system protect all the trusted computing base programs?
-   - Multics TCB consists of the supervisor(ring 0) and from ring 1 to ring 3. Ring 4 and above are standard user processing. Rings 0 to 3 can be considered part of the TCB.
+   - Multics TCB consists of the supervisor (ring 0) and from ring 1 to ring 3. Ring 4 and above are standard user processing. Rings 0 to 3 can be considered part of the TCB.
 
 #### Verifiable
 - what is basis for the correctness of the system’s trusted computing base?
