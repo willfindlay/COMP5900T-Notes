@@ -346,6 +346,15 @@ citecolor: Green
 - what is the basis for TCB correctness?
 - does the protection system enforce security goals?
 
+## Class Review
+
+#### Other Verifiability Techniques
+
+- code review
+- regression (TDD)
+- formal verification
+- fuzzing
+
 # Multics
 
 ## Jaeger Chapter 3
@@ -433,42 +442,42 @@ citecolor: Green
 - aside from ACL, Multics limits access based on protection rings as well
 - each segment contains a ring bracket that has r,w,e permission of processes on that segment
   - a segment's bracket defines the ranges of ring that can have certain permission (rwe) to the segment
-- suppose a process from ring r wants to access a segment with an access brackets of (r1,r2). We need to follow these rules:
-  - if r<r1, then the process can read and write to the segment
-  - if r1 <= r <= r2, then the process can read the segment only
-  - if r2 < r, then the process has no access to the segment
+- suppose a process from ring $r$ wants to access a segment with an access brackets of $(r1,r2)$ and we have these rules:
+  - if $r < r1$, then the process can read and write to the segment
+  - if $r1 \le r \le r2$, then the process can read the segment only
+  - if $r2 < r$, then the process has no access to the segment
 - the above rules ensure that lower rings are more privileged and has more access to segments than higher rings
-- the call bracket is to control the calls to the code segments.
-- suppose a process from ring r wants to invoke a code segment with an access bracket of (r1,r2) and a call bracket of (r2,r3): We need to follow these rules:
-  - if r<r1, then the process can execute the code segment, but there is a ring transition from r to a lower privileged ring r1 <= r' <= r2 specified by the segment
-  - if r1 <= r <= r2, then the process invokes the code segment in its current ring r
-  - if r2 <= r <= r3, then the process can execute the code segment, there is a ring transition from r to the higher privileged ring r' if authorized by the gates in the code segment's SDW
-  - if r3 < r, then the process cannot invoke the code segment
-- call brackets does not only define execute privileges but for defining transition rules as well. It is the only way to transition state in Multics.
+- call brackets define execute permissions on code segments as well as transition states
+    - can freely transition to lower rings
+    - segment gates control transitions into higher rings
 
 ##### Multilevel Security
-- each directory stores a mapping from each segment to a secrecy level.
-- multics also stores an association between each process and its secrecy level.
-- a request is authorized if one of 3 conditions are met.
-  - write: The process requests write access only and the level of the segment/directory is greater than or equal to the level of the process.
-  - read: The process requests read access only and the level of the segment/directory is less than or equal to the level of the process.
-  - read/Write: The process requests read and write access and the level of the segment/directory is the same as the process or the process is designated as trusted
+
+- each directory stores a mapping from each segment to a secrecy level
+- Multics also stores an association between each process and its secrecy level
+- operations are authorized as follows:
+    - writes require a segment to have segment secrecy $\ge$ process secrecy
+    - reads require a segment to have segment secrecy $\le$ process secrecy
+    - read/writes require segment secrecy = process secrecy
+- MLS prevents information leakage
 
 #### Multics Protection System
 
-- Multic's protection consists of these 3 policies:
+- ACL, Ring Brackets, and MLS are all taken together
+    - ACL and Ring Brackets are discretionary, while MLS is mandatory
+- examples
    - requested operation is READ:
-      - aCL checks if user has read access
-      - mLS policy checks to verify that the object's secrecy level is dominated by or equal to the process
+      - ACL checks if user has read access
+      - MLS policy checks to verify that the object's secrecy level is dominated by or equal to the process
       - the access bracket is checked to ensure the process has access to the object's segment
    - requested operation is WRITE:
-      - aCL checks if user has write access
-      - mLS policy checks to verify that the object's secrecy level dominates or equal to the process
+      - ACL checks if user has write access
+      - MLS policy checks to verify that the object's secrecy level dominates or equal to the process
       - the access bracket must allow the current ring write access
    - requested operation is EXECUTE:
       - similar to write operation
       - the process must have execute permission in the segment's ACL
-      - mLS policy must allow for reading the segment
+      - MLS policy must allow for reading the segment
       - call bracket is used instead of access bracket, and call bracket must allow execution
       - the request may result in protection domain transition
          - transition from process's current ring r to the ring specified by the segment in the call bracket r'
@@ -476,11 +485,10 @@ citecolor: Green
             - the process must transition to r'(a lower privileged ring)
          - when a process invokes a code segment with a call bracket where r2 <= r <= r3:
             - the process transitions to r' by using one of the gates in the code segment as entry point
-   - from Chapter 2 we have seen that a secure protection system requires a protection state, a labeling state, and a transition state. Multics built their protection state based on the 3 models.
 
 #### Multics Reference Monitor
 
-- Multic's reference monitor was implemented by the supervisor.
+- Multics' reference monitor is implemented by the supervisor
 - each Multics instruction either accesses a segment via a directory or via a SDW, so authorization is performed on each instruction
 - the supervisor also performs protection domain transitions as mentioned above
 - a transition that requires to go through a gate segment needs to verify the following:
@@ -510,9 +518,12 @@ citecolor: Green
 
 #### Tamper-proof
 - how does the system protect the reference monitor, including its protection system from modification?
-   - Multic's reference monitor is implemented by ring 0 procedures. Ring 0 procedures are protected by a combination of protection ring isolations and system-defined ring bracket policy. The ring bracket policy prevent processes outside of ring 0 from reading or writing reference monitor code or state directly.
+   - Multics' reference monitor is implemented by ring 0 procedures. Ring 0 procedures are protected by a combination of protection ring isolations and system-defined ring bracket policy. The ring bracket policy prevent processes outside of ring 0 from reading or writing reference monitor code or state directly.
 - does the protection system protect all the trusted computing base programs?
    - Multics TCB consists of the supervisor (ring 0) and from ring 1 to ring 3. Ring 4 and above are standard user processing. Rings 0 to 3 can be considered part of the TCB.
+   - discretionary nature of ring protection makes this difficult
+   - if we compromise one process in TCB, it can undo all ring protection at its ring level
+   - we can say that the TCB is securable, but that its tamper resistance is brittle
 
 #### Verifiable
 - what is basis for the correctness of the system’s trusted computing base?
