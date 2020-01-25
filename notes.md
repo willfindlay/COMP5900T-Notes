@@ -763,6 +763,12 @@ citecolor: Green
 - a common system default for directories is 777 (default mask 022)
     - results in 755 (rwx for user, rx for others and groups)
 
+## Paul Chapter 5.6 Symbolic links, hard links, deleting (unlinking) files
 
+## Paul Chapter 5.7 Role-based (RBAC) and mandatory (MAC) access control
+
+## Paul Chapter 5.8 Protection rings: isolation and finer-grained sharing
+
+## Paul Chapter 5.9 Relating subjects, processes, protection domains
 
 
