@@ -707,6 +707,16 @@ citecolor: Green
     - 3 most significant bits represent setuid, setgid, sticky bit
     - then the other 3 sets of 3 represent UGO
 
+#### Default permissions and umask
+
+- default permissions are `666` for files and `777` for directories
+    - `rw-rw-rw` and `rwxrwxrwx` respectively
+- however, when creating a file or directory, we also use the `umask`
+    - `umask` is negated and then anded with permissions to calculate actual permissions
+    - `umask` is often `0022`, which removes write permissions for group and other
+- the result?
+    - `rw-r--r--` for files and `rwx-r-xr-x` for directories
+
 #### Augmenting UGO with ACL
 
 - UGO sets base permissions, optional ACL for more fine-grained control
