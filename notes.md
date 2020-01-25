@@ -667,3 +667,51 @@ citecolor: Green
 - ring 0 is most privileged, ring $m$ is least privileged
 - every segment is assigned to one and only one ring
 - a process running in ring $i$ has no access to any segment in ring $j < i$
+
+# Unix
+
+## Paul Chapter 5.4 Setuid bit and effective userid(eUID)
+
+- SETUID BIT:
+   - When a process runs a program with this bit set, the process's userid will be set to the owner's userid so that the calling process can have more resources
+   - small s means executable with setuid, while big S means etuid bit but not executable
+
+- SETGID BIT:
+   - Analogous to SETUID, but applies to groups
+   
+- Real UID(rUID):
+   - Process' owner
+
+- Effective UID(eUID):
+   - Determines privileges on resource access requests, changes to allow non-privileged user to access files(owned by root)
+   
+- Saved UID(sUID):
+   - Works in the opposite direction as eUID, dropping privileges from root to non-privileged user
+
+- PID:
+   - When a process forks, it creates another process with the same parent UID(rUID,eUID,sUID)
+   - PID is new for child process
+
+## Paul Chapter 5.5 Directory permissions and inode-based example
+
+- Each directory has a list of entries structured as follows:
+   - dir-entry = (d-name, d-inode), where d-name is directory name and d-inode is the file's inode
+
+- Directory permissions:
+   - R: list contents
+   - W: edit contents, however X is also needed to rename and delete files
+   - X: traverse and search, allows access to inode meta-data
+   - setuid: no meaning
+   - setgid: group value assigned to group created the dir-entry
+   - t-bit(text/sticky bit): prevents deleting or renaming of other people's files within dir. Root and owner have all controls
+
+- World-writable files:
+   - If second last bit is w then it is world-writable
+
+- Figure 5.6 in Paul's book has a great pic for dir structured
+
+- A common system default for directories is 777(default mask 022), thus the combined default permission for a directory is 755(RWX for user, RX for others and groups)
+
+
+
+
