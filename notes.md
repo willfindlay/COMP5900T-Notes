@@ -670,26 +670,68 @@ citecolor: Green
 
 # Unix
 
-## Paul Chapter 5.4 Setuid, Setgid, RUID, EUID, SUID
+## Paul Chapter 5.3 Object permissions, file-based access control
+
+#### Owners and groups
+
+- files have an owner and a protection group
+    - UID and GID
+- used for the UG component of UGO
+
+#### Superuser (usually `root`)
+
+- UID 0
+- often called root, not necessarily
+- has access to all files, resources in userspace, independent of protection settings
+
+#### UGO model
+
+- three-tuple of permissions
+    - `rwx`
+    - for user, group and other
+    - where:
+        - user = owner
+        - group = members of protection group
+        - other = anyone else on the system
+- `r` = read (can list contents for directories)
+- `w` = write (can append for directories)
+- `x` = execute (can cd for directories)
+- `-` = no permission in that slot
+- first flag is special and specifies what type of file it is
+    - `-` = normal file
+    - `d` = directory
+    - `c` = character device
+    - `b` = block device
+    - `p` = named pipe
+- can also be represented as a 12-bit number or a 4 digit octal
+    - 3 most significant bits represent setuid, setgid, sticky bit
+    - then the other 3 sets of 3 represent UGO
+
+#### Augmenting UGO with ACL
+
+- UGO sets base permissions, optional ACL for more fine-grained control
+- check ACL first, fall back to UGO if no entry
+
+## Paul Chapter 5.4 setuid, setgid, RUID, EUID, SUID
 
 - Setuid bit:
-   - when a process runs a program with this bit set, the process's userid will be set to the owner's userid so that the calling process can have more resources
-   - `s` means executable with setuid
-   - `S` means setuid bit but not executable
+    - when a process runs a program with this bit set, the process's userid will be set to the owner's userid so that the calling process can have more resources
+    - `s` means executable with setuid
+    - `S` means setuid bit but not executable
 - Setgid:
-   - analogous to setuid, but applies to groups
+    - analogous to setuid, but applies to groups
 - Real UID (RUID):
-   - process' owner
+    - process' owner
 - Effective UID (EUID):
-   - determines privileges on resource access requests, changes to allow non-privileged user to access files (owned by root)
+    - determines privileges on resource access requests, changes to allow non-privileged user to access files (owned by root)
 - Saved UID (SUID):
-   - saves UID when a process needs to lower its privileges temporarily
-   - EUID is saved as SUID and then changed
-   - it can return its EUID to SUID later
+    - saves UID when a process needs to lower its privileges temporarily
+    - EUID is saved as SUID and then changed
+    - it can return its EUID to SUID later
 - PID:
-   - when a process forks, it creates another process with the same parent UID triple (RUID, EUID, SUID)
-   - PID is new for child process
-   - kernel version = TGID (thread group ID)
+    - when a process forks, it creates another process with the same parent UID triple (RUID, EUID, SUID)
+    - PID is new for child process
+    - kernel version = TGID (thread group ID)
 - TID
     - same as PID but for threads
     - kernel version = PID (not to be confused with userspace PID, which is TGID)
@@ -697,17 +739,17 @@ citecolor: Green
 ## Paul Chapter 5.5 Directory permissions and inode-based example
 
 - each directory has a list of entries structured as follows:
-   - dir-entry = (d-name, d-inode), where d-name is directory name and d-inode is the file's inode
+    - dir-entry = (d-name, d-inode), where d-name is directory name and d-inode is the file's inode
 - directory permissions:
-   - R: list contents
-   - W: edit contents, however X is also needed to rename and delete files
-   - X: traverse and search, allows access to inode meta-data
-   - setuid: no meaning (used to mean something historically)
-   - setgid: group value assigned to group created the dir-entry
-   - t-bit(text/sticky bit): prevents deleting or renaming of other people's files within dir. Root and owner have all controls
+    - R: list contents
+    - W: edit contents, however X is also needed to rename and delete files
+    - X: traverse and search, allows access to inode meta-data
+    - setuid: no meaning (used to mean something historically)
+    - setgid: group value assigned to group created the dir-entry
+    - t-bit(text/sticky bit): prevents deleting or renaming of other people's files within dir
+        - Root and owner have all controls
 - world-writable files:
-   - If second last bit is w then it is world-writable
-- figure 5.6 in Paul's book has a great pic for dir structured
+    - If second last bit is w then it is world-writable
 - a common system default for directories is 777 (default mask 022)
     - results in 755 (rwx for user, rx for others and groups)
 
