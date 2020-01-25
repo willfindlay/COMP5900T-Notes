@@ -771,4 +771,6 @@ citecolor: Green
 
 ## Paul Chapter 5.9 Relating subjects, processes, protection domains
 
+## Jaeger 4.2.3 UNIX security evaluation
 
+## Jaeger 4.2.4 UNIX vulnerabilities
