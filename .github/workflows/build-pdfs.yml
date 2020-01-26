@@ -14,6 +14,7 @@ jobs:
         sudo apt-get update && sudo apt-get install pandoc
         sudo apt-get install biber
         sudo apt-get install texlive-latex-extra
+        sudo apt-get install texlive-full
     - name: Clone compiler and install
       run: |
         git clone https://github.com/willfindlay/compiler
