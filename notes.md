@@ -845,9 +845,34 @@ citecolor: Green
 
 #### Network-facing daemons
 
+- daemonized processes running in higher privileges (usually root)
+- maintain network ports that are open to all parties
+- these processes are part of the TCB since they run as root
+    - therefore, they must protect themselves from bad input (malicious or accidentally problematic)
+- several vulnerabilities reported for network-facing daemons
+    - usually as a result of buffer overflows (binary exploitation)
+    - e.g., the Morris Worm exploited `sendmail`, `finger`, and `rsh`
+- vulnerable software has been patched, but protection is ad hoc and unverifiable
+- remote login daemons, file transfer protocol, and network filesystems like NFS put a lot of trust in the network
+    - network is implicitly untrustworthy
+
 #### Rootkits
 
+- kernel modules may be used to load malicious code into the kernel
+- can enable attacker privilege escalation, full control over system calls
+    - e.g., hooking into `execve` system call to spawn a root shell when given a special keyword
+- can completely hide themselves via modification of kernel data structures or obfuscation of output from specific kernel functions
+
 #### Environment variables
+
+- `LIBPATH` specify path to library code
+    - modifying this can force loading of attacker-provided library code which can supplant legitimate code used by many or all dynamic executables
+- many other environment variables are used by processes
+    - standard ones like `PATH`, etc.
+    - non-standard ones like `MY_API_KEY`, `PATH_TO_IMPORTANT_DATA`, etc.
+- environment variables are loaded from parent process
+    - untrusted process can invoke a TCB program with environment variables that can compromise it
+    - this is fine if we can verify all TCB programs, but we **can't do this**, as explained previously
 
 #### Shared resources
 
