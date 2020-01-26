@@ -811,10 +811,20 @@ citecolor: Green
 
 ## Paul Chapter 5.7 Role-based (RBAC) and mandatory (MAC) access control
 
+- DAC: Owner decides the permissions
+- MAC: System decides the permissions
+- RBAC: Permission is based on roles of users
+
 ## Paul Chapter 5.8 Protection rings: isolation and finer-grained sharing
+
+- Protection rings work similar to Multics ring
+- Read and write access brackets are new in UNIX
 
 ## Paul Chapter 5.9 Relating subjects, processes, protection domains
 
+- Protection domain
+   -  permission set associated with the objects a process can access
+   
 ## Jaeger 4.2.3 UNIX security evaluation
 
 - UNIX fails to meet any of the three desirable properties of a secure OS reference monitor
