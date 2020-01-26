@@ -1,8 +1,11 @@
 ---
 title: |
     | COMP5900 OS Security
-#subtitle: |
-#    | COMP5900T OS Security Assignment
+subtitle: |
+    | Readings and General Class Notes
+author: |
+    | William Findlay
+    | Tri Do
 date: \today
 subparagraph: yes
 documentclass: findlay
@@ -12,7 +15,6 @@ header-includes:
     - \input{glyphtounicode}
     - \pdfgentounicode=1
     - \usepackage{enumitem}
-    - \author{William Findlay \and Tri Do}
 classoption:
     - 12pt
 numbersections: true
@@ -25,6 +27,8 @@ citecolor: Green
 <!-- Title page -->
 \maketitle
 \thispagestyle{empty}
+
+\rhead{\small \itshape William Findlay and Tri Do}
 
 <!-- Comment this for normal spacing -->
 \onehalfspacing
