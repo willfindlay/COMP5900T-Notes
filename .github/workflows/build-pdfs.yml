@@ -9,6 +9,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - uses: docker://pandoc/latex:2.9
     - name: Clone compiler and install
       run: |
         git clone https://github.com/willfindlay/compiler
