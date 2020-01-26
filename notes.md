@@ -765,6 +765,14 @@ citecolor: Green
 
 ## Paul Chapter 5.6 Symbolic links, hard links, deleting (unlinking) files
 
+- symbolic link (indirect alias)
+    - different inode, different pathname, points to pathname
+- hard link (direct alias)
+    - same inode, different pathname
+    - usually disallowed for directories, to prevent looping
+- deleting a file
+    - actually unlinking it
+
 ## Paul Chapter 5.7 Role-based (RBAC) and mandatory (MAC) access control
 
 ## Paul Chapter 5.8 Protection rings: isolation and finer-grained sharing
