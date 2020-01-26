@@ -1,0 +1,22 @@
+name: Build PDFs
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Clone compiler and install
+      run: |
+        git clone https://github.com/willfindlay/compiler
+        (cd compiler && make install)
+    - name: Clone docuemntclass and install
+      run: |
+        git clone https://github.com/willfindlay/findlay-tex
+        (cd findlay-tex && make install)
+    - name: Build PDF 
+      run: |
+        compiler notes.md
