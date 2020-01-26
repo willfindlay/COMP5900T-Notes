@@ -809,6 +809,8 @@ citecolor: Green
         - users might expect data to be deleted, but in fact datablock is not necessarily overwritten
         - datablock may persist until it is overwritten by future data
 
+<!-- TODO: go over the rest of Paul to augment what Tri did -->
+
 ## Paul Chapter 5.7 Role-based (RBAC) and mandatory (MAC) access control
 
 - DAC: Owner decides the permissions
