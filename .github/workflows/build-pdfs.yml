@@ -15,9 +15,9 @@ jobs:
         (cd compiler && make install)
     - name: Clone docuemntclass and install
       run: |
-        export PATH=$PATH:$HOME/.local/bin
         git clone https://github.com/willfindlay/findlay-tex
         (cd findlay-tex && make install)
     - name: Build PDF 
       run: |
+        export PATH=$PATH:$HOME/.local/bin
         compiler notes.md
