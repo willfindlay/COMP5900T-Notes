@@ -824,7 +824,7 @@ citecolor: Green
 
 - Protection domain
    -  permission set associated with the objects a process can access
-   
+
 ## Jaeger 4.2.3 UNIX security evaluation
 
 - UNIX fails to meet any of the three desirable properties of a secure OS reference monitor
@@ -915,4 +915,34 @@ citecolor: Green
 
 #### Shared resources
 
+- problems arise when TCB processes share resources with untrusted processes
+- common problem: sharing `/tmp`
+    - untrusted processes can create files in `/tmp` and share access with others
+        - (incl. TCB processes)
+        - untrusted process can
+            - guess the name of TCB file in advance
+            - make it ahead of time
+            - and grant access to TCB process
+        - TCB process may have no idea anything is wrong
+        - we can prevent this problem by checking for file existence on creation
+
 #### TOCTOU attacks on vulnerable processes
+
+- class of attacks where untrusted processes change the state of the system between a check and an access
+- classic example:
+    - setuid process uses `access` system call to check permissions for RUID
+    - then it opens the file (e.g., for writing)
+    - meanwhile, a racing process has switched what that pathname points to between when the file was checked and when it was opened
+    - now the privileges process is writing to a file that the user shouldn't have access to
+- UNIX added a flag to prevent `open` from following symlinks
+    - but untrusted processes may still manipulate the mapping between file names and objects
+
+### A summary
+
+- main problems with UNIX
+    - discretionary protection system
+    - unbounded size of system TCB, both in userspace and kernelspace
+    - many vulnerabilities described above
+- converting UNIX to a secure OS is a *very* hard problem
+
+
