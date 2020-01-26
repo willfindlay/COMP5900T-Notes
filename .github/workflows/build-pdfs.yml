@@ -9,7 +9,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
-    - uses: docker://pandoc/latex:2.9
+    - name: Setup pandoc and biber
+      run: |
+        sudo apt-get update && sudo apt-get install pandoc
+        sudo apt-get install biber
     - name: Clone compiler and install
       run: |
         git clone https://github.com/willfindlay/compiler
