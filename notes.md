@@ -767,11 +767,17 @@ citecolor: Green
 
 - symbolic link (indirect alias)
     - different inode, different pathname, points to pathname
+    - "a file whose datablock points to another file"
 - hard link (direct alias)
     - same inode, different pathname
     - usually disallowed for directories, to prevent looping
 - deleting a file
     - actually unlinking it
+    - the file is only removed from the filesystem after the **last** link is removed
+        - that is, the last reference to its inode
+    - problem arises when considering **permanent removal**
+        - users might expect data to be deleted, but in fact datablock is not necessarily overwritten
+        - datablock may persist until it is overwritten by future data
 
 ## Paul Chapter 5.7 Role-based (RBAC) and mandatory (MAC) access control
 
