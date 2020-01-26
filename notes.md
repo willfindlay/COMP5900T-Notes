@@ -12,6 +12,7 @@ header-includes:
     - \input{glyphtounicode}
     - \pdfgentounicode=1
     - \usepackage{enumitem}
+    - \author{William Findlay \and Tri Do}
 classoption:
     - 12pt
 numbersections: true
@@ -787,4 +788,67 @@ citecolor: Green
 
 ## Jaeger 4.2.3 UNIX security evaluation
 
+- UNIX fails to meet any of the three desirable properties of a secure OS reference monitor
+    - mediation is not complete
+    - reference monitor is not tamperpoof
+    - reference monitor is not verifiable
+
+### Complete mediation
+
+- check permissions for accessing a file or inode on *some* system calls
+- reference monitor authorizes access to system objects that the kernel uses in its operations
+- the problem?
+    - $(r,w,x)$ permissions are not expressive enough to mediate all access
+    - an open file descriptor can be modified freely via `ioctl` or `fcntl`
+- no authorization provided for some objects
+    - e.g., network communication
+- difficult to verify complete mediation
+    - reference monitor is placed where security-sensitive operations are performed
+    - *why is this a bad thing? maybe ask in class...*
+
+### Tamperproof
+
+- reference monitor, protection system are stored in kernel **but...**
+    - this doesn't guarantee tamperproof
+- discretionary protection system (may be tampered with by any running process)
+    - untrusted user process' can change permissions on that user's data freely
+- kernel is not as protected from untrusted processes
+    - no specific gates specified for ring escalation (procedures to verify system calls may be misplaced)
+- user level processes have interfaces to manipulate the kernel
+    - sysfs
+    - procfs (note from William: I'm fairly certain this didn't exist until Linux)
+    - kernel modules
+    - netlink sockets
+    - direct access to kernel memory through character devices (e.g., `/dev/kmem`)
+
+#### Root and TCB issues...
+
+- **ALL** root processes are part of the TCB
+    - because these processes have access to all of userland, including other TCB processes
+    - these processes can also interact with the kernel in dangerous ways
+        - (including any aspect of protection system and reference monitor)
+- anyone logged in as root can run any program as root
+- unsecure root processes can be tampered with
+    - e.g., root-owned daemons listening on open ports (may be vulnerable to binary exploitation)
+    - e.g., TOCTOU in setuid binaries
+
+### Verifiability
+
+- unbounded TCB size due to root processes implicitly being part of the TCB
+    - this makes formal verification *impossible*
+    - userland part of the TCB is effectively unverifiable
+- kernel can be freely modified and extended (e.g., kernel modules)
+    - this means we have the same problem in kernelspace as we do in userspace
+- no complete mediation and no tamperproofing effectively means the system is unverifiable
+
 ## Jaeger 4.2.4 UNIX vulnerabilities
+
+#### Network-facing daemons
+
+#### Rootkits
+
+#### Environment variables
+
+#### Shared resources
+
+#### TOCTOU attacks on vulnerable processes
