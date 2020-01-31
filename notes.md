@@ -814,13 +814,58 @@ citecolor: Green
 ## Paul Chapter 5.7 Role-based (RBAC) and mandatory (MAC) access control
 
 - DAC: Owner decides the permissions
+    - subject who owns the object may grant permissions to other subjects
 - MAC: System decides the permissions
+    - permissions are mandatory
+    - security policy administrator decides on subject permissions for every object
 - RBAC: Permission is based on roles of users
+    - subject is assigned one or more roles
+    - roles have pre-assigned permissions
+
+#### SE-Linux
+
+- provides MAC and other security features for the Linux kernel
+- built on the Flask architecture
 
 ## Paul Chapter 5.8 Protection rings: isolation and finer-grained sharing
 
-- Protection rings work similar to Multics ring
-- Read and write access brackets are new in UNIX
+- provide layered protection within processes, separation and sharing of subsystems
+    - low ring = privileged
+    - high ring = less privileged
+    - ring 0 = supervisor/hypervisor
+- introduced by Multics in 1960s
+    - eventual hardware support for 8 rings
+        - I think David said modern x86 can only do 4, though
+    - modern systems like Linux only really use 2 rings (0 and 3)
+        - user and supervisor mode respectively
+- transfer control to stronger rings
+    - e.g. for sensitive operations like I/O, changing permissions, etc.
+    - require passage through segment gates
+- transfer control to weaker rings
+    - call simple shared services
+    - always allowed
+- transfer control within access brackets
+    - always allowed
+
+#### Segment Access Brackets
+
+- specify allowed ranges for ring access transfer
+- access attempts outside access brackets are either denied or mediated by gatekeeper
+
+#### Segment Gate Extension
+
+- gate list
+    - specified entry points into a ring bracket
+- gates are needed to cross into higher rings outside access bracket
+- mediated by the gatekeeper software (when we are not in access bracket)
+    - calling weaker ring -> allowed
+    - calling ring within gate extension -> allow if transfer on gatelist
+    - calling ring stronger than gate extension -> error
+
+#### Cross-Ring Returns
+
+- crossing back to original ring also triggers mediation
+    - may involve return gates
 
 ## Paul Chapter 5.9 Relating subjects, processes, protection domains
 
