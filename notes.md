@@ -992,4 +992,24 @@ citecolor: Green
     - many vulnerabilities described above
 - converting UNIX to a secure OS is a *very* hard problem
 
+## Linux Security Modules: General Security Support for the Linux Kernel
 
+- The reading is about Linux Security Modules(LSM). Linux capabilities, SecurityEnhanced Linux (SELinux), and Domain and Type Enforcement (DTE) uses LSM.
+
+### Introduction
+
+- Linux kernel only provides DAC and lacks any direct support for enhanced access control mechanisms.
+- Linux has kernel modules for device drivers and filesystems. Why not create modules for access control?
+   - The kernel does not have an infrastructure to supports mediating access to kernel objects.
+
+### The Problem: Constrained Design Space
+
+- Some of the goals that LSM aimed to achieved were:
+   - generic(this mean using a different security module means a simple task of loading/unloading kernel modules)
+   - simple, minimal,efficient
+   - must support existing POSIX capabilities logic(as optional security module)
+- Core functionality: Access control
+- Other functionalities: 
+   - Virtual environment, security auditing
+   - Some projects wants the ability to grant access that would usually be denied by DAC.
+- In general: the purpose of LSM is to generalize/unify the functional needs of many security projects(with little impact to the kernel).
