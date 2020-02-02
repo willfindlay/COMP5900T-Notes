@@ -1013,3 +1013,11 @@ citecolor: Green
    - Virtual environment, security auditing
    - Some projects wants the ability to grant access that would usually be denied by DAC.
 - In general: the purpose of LSM is to generalize/unify the functional needs of many security projects(with little impact to the kernel).
+
+### LSM Design: Mediate Access to Kernel Objects
+
+- User Space(User Level process) -> Kernel Space(open system call->look up inode->error checks->DAC checks->LSM hook->access inode)
+- The goal is to create a LSM hook just before allowing access tot he kernel object
+- This stops TOCTOU attacks and reduce duplicate lookups.
+- Permissive LSM hooks allows security to override DAC restrictions
+- LSM also supports module stacking 
