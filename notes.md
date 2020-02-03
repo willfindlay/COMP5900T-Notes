@@ -1021,3 +1021,44 @@ citecolor: Green
 - This stops TOCTOU attacks and reduce duplicate lookups.
 - Permissive LSM hooks allows security to override DAC restrictions
 - LSM also supports module stacking 
+
+### Implementation
+
+#### Implementation Overview
+
+- LSM modifies the kernel in 5 ways
+   - Adds opaque security fields to certain kernel data structures
+   - Inserts calls to security hook functions at various points within the kernel code
+   - Adds a generic security system call
+   - Provides functions to allow kernel modules to register and unregister themselves as security modules
+   - Moves most of the capabilities logic into an optional security module
+   
+#### Opaque Security Fields
+  
+- Opaque security fields are void* pointers and the kernel data structure needs to be modified
+- alloc_security and free_security hooks are created to allocate and free security data
+- post_lookup can be used to set security data for inode
+- The security module need to handle cases when there are objects existing prior to security module initialization
+   - Ignore the objects
+   - Traverse the kernel data structures and setting the security fields for existing objects
+   - Test for pre-existing objects before use then only set security field for pre-existing objects when needed
+
+#### Calls to Security Hook Functions
+- Hooks are called by pointers in a security_ops table
+- vfs_mkdir example:
+   - security ops->inode ops->mkdir: Create dir
+   - curity ops->inode ops->post mkdir: Set the security field for the new dir's inode structure
+
+#### Security System Call
+
+- The security system call is socketcall(unsigned int id, unsigned int call, unsigned long *args)
+- LSM provides a sys_security entry point function that calls sys_security hook. 
+   - A security module that does not provide any new calls can define a sys_security hook function that returns -ENOSYS
+
+#### Registering Security Modules
+
+- register_security: Called when a security module is loaded
+   - Sets the global security_ops table
+- unregister security: Called when a security module is unloaded
+- A Security module can register itself with the primary module with mod_reg_security
+
