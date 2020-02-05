@@ -992,9 +992,15 @@ citecolor: Green
     - many vulnerabilities described above
 - converting UNIX to a secure OS is a *very* hard problem
 
+# LSM, SELinux
+
 ## Linux Security Modules: General Security Support for the Linux Kernel
 
-- The reading is about Linux Security Modules(LSM). Linux capabilities, SecurityEnhanced Linux (SELinux), and Domain and Type Enforcement (DTE) uses LSM.
+- The reading is about
+    - Linux Security Modules(LSM)
+    - Linux capabilities
+    - Security Enhanced Linux (SELinux)
+    - Domain and Type Enforcement (DTE)
 
 ### Introduction
 
@@ -1009,7 +1015,7 @@ citecolor: Green
    - simple, minimal,efficient
    - must support existing POSIX capabilities logic(as optional security module)
 - Core functionality: Access control
-- Other functionalities: 
+- Other functionalities:
    - Virtual environment, security auditing
    - Some projects wants the ability to grant access that would usually be denied by DAC.
 - In general: the purpose of LSM is to generalize/unify the functional needs of many security projects(with little impact to the kernel).
@@ -1020,7 +1026,7 @@ citecolor: Green
 - The goal is to create a LSM hook just before allowing access tot he kernel object
 - This stops TOCTOU attacks and reduce duplicate lookups.
 - Permissive LSM hooks allows security to override DAC restrictions
-- LSM also supports module stacking 
+- LSM also supports module stacking
 
 ### Implementation
 
@@ -1032,9 +1038,9 @@ citecolor: Green
    - Adds a generic security system call
    - Provides functions to allow kernel modules to register and unregister themselves as security modules
    - Moves most of the capabilities logic into an optional security module
-   
+
 #### Opaque Security Fields
-  
+
 - Opaque security fields are void* pointers and the kernel data structure needs to be modified
 - alloc_security and free_security hooks are created to allocate and free security data
 - post_lookup can be used to set security data for inode
@@ -1052,7 +1058,7 @@ citecolor: Green
 #### Security System Call
 
 - The security system call is socketcall(unsigned int id, unsigned int call, unsigned long *args)
-- LSM provides a sys_security entry point function that calls sys_security hook. 
+- LSM provides a sys_security entry point function that calls sys_security hook.
    - A security module that does not provide any new calls can define a sys_security hook function that returns -ENOSYS
 
 #### Registering Security Modules
