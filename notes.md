@@ -95,7 +95,7 @@ citecolor: Green
 
 # Defining a Secure OS
 
-## Van Oorschot Chapter 5.0 - 5.2
+## Paul Chapter 5.0 - 5.2
 
 ### Intro
 
@@ -992,7 +992,7 @@ citecolor: Green
     - many vulnerabilities described above
 - converting UNIX to a secure OS is a *very* hard problem
 
-# MAC, Linux Security Modules, SELinux
+# MAC, LSM, SELinux
 
 ## MAC
 
