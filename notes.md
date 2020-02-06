@@ -992,8 +992,105 @@ citecolor: Green
     - many vulnerabilities described above
 - converting UNIX to a secure OS is a *very* hard problem
 
-# LSM, SELinux
+# MAC, Linux Security Modules, SELinux
 
+## MAC
+
+- mandatory access control
+    - not discretionary
+- MAC policy is set by administrator, and fixed
+- MAC policy supersedes discretionary policy
+
+## SELinux
+
+- provides Linux kernel with MAC policies
+
+#### Type Enforcement and Labels
+
+- labels
+    - objects and subjects get labels
+    - for files, directories, sockets, special files, etc. -> extended fs attributes
+    - for processes, ports, etc. -> managed by kernel tables
+- label format
+    - `user:role:type:level(optional)`
+    - `user` = SELinux user, not same as Linux concept of users
+    - `role` = what role the subject/object has
+    - `type` = what type the subject/object is
+    - `level` = used with MLS/MCS, optional
+- type enforcement
+    - for example:
+        - it probably makes sense for a subject of type `x_t` to access an object of type `x_config_t`
+        - it probably doesn't make sense for it to access an object of type `shadow_t`
+    - we set policies to allow interactions
+    - all other interactions are denied by default
+
+#### Booleans
+
+- settings and policy defaults that you can enable or disable
+- SELinux picks sensible defaults based on user feedback
+- hundreds of these settings
+
+#### Label Transitions
+
+- policy which specifies transition of labels when creating
+    - subdirectories or
+    - files within directories
+- for example:
+    - `/home/will` has type `:will_home_t`
+    - add a transition for application with `vim_t` so that new files in `/home/will` become `:will_txt_t`
+    - new file saved with vim under `/home/will/new.txt` will have label `:will_txt_t`
+
+#### Multi-Category Security (MCS)
+
+- MCS label on subject **must match** MCS label on object
+- this is combined with type enforcement
+    - allowed iff type enforcement rules are OK and MCS labels match
+
+#### Multi-Level Security (MLS)
+
+- levels of secrecy on subjects and objects
+- SELinux uses BLP model:
+    - subjects can
+        - read-only less secret objects
+        - write-only more secret objects
+        - read/write equally secret objects
+
+## LSM
+
+- Linux Security Modules
+    - framework for the development of access control enforcement modules
+- some cool things that use LSM (now):
+    - SELinux
+    - Domain Type Enforcement (DTE)
+    - POSIX.1e capabilities
+
+#### LSM Features
+
+- lightweight
+- general-purpose
+    - enables creation of many access control models as loadable kernel modules
+
+#### LSM Design Goals
+
+- truly generic
+    - using a different model = loading a different module
+- simple, minimally invasive, efficient
+- support existing POSIX.1e capabilities
+
+#### What LSM Allows Modules to Do
+
+- defines rules describing subject access to kernel objects
+    - does subject `S` have permission to perform operation `O` on object `OBJ`
+- purposely only implements the necessary access control functionality required by existing security projects
+
+#### Implementation of LSM Patch
+
+- adds security fields to kernel data structures
+- insert calls to security hooks at various points in kernel code
+- adds generic security system call
+- provides functions for modules to register and unregister themselves as security modules
+
+<!--
 ## Linux Security Modules: General Security Support for the Linux Kernel
 
 - The reading is about
@@ -1067,4 +1164,4 @@ citecolor: Green
    - Sets the global security_ops table
 - unregister security: Called when a security module is unloaded
 - A Security module can register itself with the primary module with mod_reg_security
-
+-->
