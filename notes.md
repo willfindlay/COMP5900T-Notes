@@ -1008,6 +1008,7 @@ citecolor: Green
 ## SELinux
 
 - provides Linux kernel with MAC policies
+- implements the Flask flexible access control architecture in Linux
 
 #### Type Enforcement and Labels
 
@@ -1093,6 +1094,23 @@ citecolor: Green
 - insert calls to security hooks at various points in kernel code
 - adds generic security system call
 - provides functions for modules to register and unregister themselves as security modules
+
+#### Interaction with LSM Modules
+
+- modules can use virtual filesystems
+    - procfs
+    - custom filesystem
+- or they can use the `security` system call
+    - this system call is implemented by the module
+    - not implemented by the kernel by default
+    - uses the same signature as the `socketcall` system call
+
+#### POSIX.1e Capabilities
+
+- permissive access control
+    - grants permissions to processes, rather than taking permissions away
+- allow select processes to execute a subset of root capabilities
+- this was moved into an LSM module
 
 <!--
 ## Linux Security Modules: General Security Support for the Linux Kernel
