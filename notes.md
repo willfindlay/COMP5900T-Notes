@@ -31,7 +31,6 @@ citecolor: Green
 \rhead{\small \itshape William Findlay and Tri Do}
 
 <!-- Comment this for normal spacing -->
-\onehalfspacing
 
 <!-- Table of contents -->
 \newpage
@@ -1116,11 +1115,103 @@ citecolor: Green
 
 ## Why Sandbox?
 
+- traditional UNIX systems not great at offering protection
+- computers are more connected than ever before
+    - internet
+- distributed/cloud computing services -> increased need to isolate user processes from each other
+
+#### Early Efforts
+
+- virtual memory
+- capabilities
+- DAC
+- UNIX implemented these as UGO model augmented by ACLs
+    - this was okay but not really adequate anymore
+    - certainly not good enough for sandboxing
+
+#### Primary Goal of Sandboxing
+
+- protect users from their own applications
+    - when these applications are exposed to untrusted content
+- complexity of applications increases risk
+    - especially true on internet
+- sandboxing policy limits impact of compromised processes
+
 ## DAC/MAC Sandboxing
+
+#### OpenSSH (DAC Sandboxing in Practice)
+
+- pre-auth sandbox
+    - needed root privileges to bind to TCP port 22
+    - compromising before authentication should not grant access to entire system
+- post-auth sandbox
+    - server should only be able to access resources of the authenticated user
+- solution? trusted monitor process and untrusted child process
+    - monitor keeps superuser privileges
+    - `chroot` jailing child process in pre-auth + nobody user
+    - UID/GID changed to actual user in post-auth
+
+#### Other Applications (DAC)
+
+- technique was effective for OpenBSD due to
+    - user-oriented policy (aligns well with UNIX DAC model)
+    - extant privilege (the initial application required root privileges anyway)
+- problems for general sandboxing
+    - doesn't necessarily align with UNIX DAC
+    - application does not necessarily have root to begin with
+        - e.g., need to ship Chromium with setuid root binaries in order to invoke `chroot`
+
+#### MAC Sandboxing
+
+- solutions often way too complex
+- complexity hints that we are taking the wrong approach
 
 ## System Call Interposition
 
+- idea was to simply hook into system calls and insert special policies within the reference monitor,
+based on calling application
+- example for `chroot`
+    - instead of calling `chroot`, hook `open` calls, providing a whitelist of allowed files/directories
+- this approach was shown to be ineffective due to concurrent access
+    - threads all have concurrent access to objects
+    - includes arguments passed to system calls
+    - TOCTOU race results
+- other concurrency issues?
+    - at a higher level, system call wrapper meanings can change
+    - file paths can point to different inodes
+        - no guarantee that file path at time of policy decision is the same as file path during system call
+
 ## Linux `seccomp(2)`
+
+- process makes `seccomp` system call, goes into secure computing mode
+- originally, four system calls allowed
+    - `read`, `write` on files already opened before seccomp call
+    - `sigreturn` for signal handler support
+    - `exit` to quit
+- to allow more complicated interactions, need support for a whitelist
+    - `seccomp-bpf`
+
+#### `seccomp-bpf`
+
+- use BPF syntax to define `seccomp` filters
+- big problem?
+    - whitelisting policies are error-prone
+    - example:
+        - deny `open` but allow `openat`
+        - but `openat` can be made to behave like `open`
+- also allows definition of `seccomp` filters on syscall arguments
+    - but we have already shown system call arguments are effectively meaningless for policy definitions
+
+#### Summary of Findings
+
+- `seccomp-bpf` is insufficient for sandboxing
+- for complete solution, need to cut off from system's
+    - IPC namespace (`clone`)
+    - network namespace
+    - mount namespace (similar to `chroot`)
+    - PID namespace
+- creating new namespaces requires `CAP_SYS_ADMIN` -> essentially superuser privilege
+- same problem as we discussed with DAC sandboxing techniques
 
 ## OpenBSD `pledge(2)`
 
