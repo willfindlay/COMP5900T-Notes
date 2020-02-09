@@ -1197,31 +1197,37 @@ based on calling application
 - big problem?
     - whitelisting policies are error-prone
     - example:
-        - deny `open` but allow `openat`
-        - but `openat` can be made to behave like `open`
-- also allows definition of `seccomp` filters on syscall arguments
+        - deny `open(2)` but allow `openat(2)`
+        - but `openat(2)` can be made to behave like `open(2)`
+- also allows definition of `seccomp(2)` filters on syscall arguments
     - but we have already shown system call arguments are effectively meaningless for policy definitions
 
 #### Summary of Findings
 
 - `seccomp-bpf` is insufficient for sandboxing
 - for complete solution, need to cut off from system's
-    - IPC namespace (`clone`)
+    - IPC namespace (`clone(2)`)
     - network namespace
-    - mount namespace (similar to `chroot`)
+    - mount namespace (similar to `chroot(2)`)
     - PID namespace
 - creating new namespaces requires `CAP_SYS_ADMIN` -> essentially superuser privilege
 - same problem as we discussed with DAC sandboxing techniques
 
 ## OpenBSD `pledge(2)`
 
-- similar to `seccomp` but easier to use
-- instead of using PBF to filter system calls
-   - pledge groups system calls into groups (`stdio`, `rcpath`)
+- similar to `seccomp(2)` but easier to use
+- instead of using BPF program to filter system calls...
+   - pledge groups system calls into groups (`stdio`, `rcpath`, etc.)
+       - you choose what categories your process can do with a string
+   - pledge with empty string only allows `_exit(2)`
+       - this causes problems with calls like `mprotect(2)`
 - however, a downside is that it creates inconsistent and meaningless policies
    - pledging wpath, but wpath can write to any file on the system
-- although the functionality of whitelisting a path wasn't added, it would still be susceptible to TOCTOU attacks
-- **important**: pledge's main weakness lies within the ability for a compromised process to disable the security mechanism
+- originally had functionality for whitelisting specific paths in the filesystem
+    - this was removed
+    - if it was still there, we would have same TOCTOU problem as `seccomp-bpf`
+- **pledge's main weakness**
+    - if `exec` category is allowed, we can escape/disable the security mechanism
 - pledge is also insufficient for sandboxing
 
 ## FreeBSD `capsicum(4)`
@@ -1230,6 +1236,12 @@ based on calling application
    - as opposed to previous 2, capsicum doesn't focus on restricting specific system calls
 - capsicum puts processes into capability mode
    - this means no access to new resources by global namespaces
-- for a process(in capability mode) to access a file. The file descriptor would need to have CAP_ in front of read, write, and lookup in front of it
+- system call to start `capsicum` on a process is `cap_enter(2)`
+- processes in capability mode can only open files relative to directories they have permission to access
+    - `CAP_READ`
+    - `CAP_WRITE`
+    - `CAP_LOOKUP`
+- inherit open descriptors from parents
+- new descriptors can be derived from existing ones
 - very minimal effort to use capsicum
 
