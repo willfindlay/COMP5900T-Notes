@@ -1112,3 +1112,16 @@ citecolor: Green
 - allow select processes to execute a subset of root capabilities
 - this was moved into an LSM module
 
+# Sandboxing
+
+## Why Sandbox?
+
+## DAC/MAC Sandboxing
+
+## System Call Interposition
+
+## Linux `seccomp(2)`
+
+## OpenBSD `pledge(2)`
+
+## FreeBSD `capsicum(4)`
