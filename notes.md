@@ -1215,18 +1215,18 @@ based on calling application
 
 ## OpenBSD `pledge(2)`
 
-- similar to 'seccomp' but easier to use
+- similar to `seccomp` but easier to use
 - instead of using PBF to filter system calls
-   - pledge groups system calls into groups(stdio,rcpath)
+   - pledge groups system calls into groups (`stdio`, `rcpath`)
 - however, a downside is that it creates inconsistent and meaningless policies
    - pledging wpath, but wpath can write to any file on the system
 - although the functionality of whitelisting a path wasn't added, it would still be susceptible to TOCTOU attacks
-- IMPORTANT: pledge's main weakness lies within the ability for a compromised process to disable the security mechanism
+- **important**: pledge's main weakness lies within the ability for a compromised process to disable the security mechanism
 - pledge is also insufficient for sandboxing
 
 ## FreeBSD `capsicum(4)`
 
-- capsicum focuses on ACCESS TO GLOBAL NAMESPACE
+- capsicum focuses on **access to global namespace**
    - as opposed to previous 2, capsicum doesn't focus on restricting specific system calls
 - capsicum puts processes into capability mode
    - this means no access to new resources by global namespaces
