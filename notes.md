@@ -841,7 +841,7 @@ citecolor: Green
     - eventual hardware support for 8 rings
         - I think David said modern x86 can only do 4, though
     - modern systems like Linux only really use 2 rings (0 and 3)
-        - user and supervisor mode respectively
+        - supervisor and user mode respectively
 - transfer control to stronger rings
     - e.g. for sensitive operations like I/O, changing permissions, etc.
     - require passage through segment gates
