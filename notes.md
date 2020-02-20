@@ -1245,3 +1245,29 @@ based on calling application
 - new descriptors can be derived from existing ones
 - very minimal effort to use capsicum
 
+## Understanding and Improving App Installation Security Mechanisms through Empirical Analysis of Android
+
+### 2. ANDROID PRELIMINARIES
+
+- App Packages(.apk files)
+   - an archive of a Dalvik file that runs on Dalvik VM
+   - also has AndroidManifest.xml that contains meta info. for the app
+   - above components are signed with the developer's key, included in apk files
+   
+- Android Security Model
+   - One or more apps are contained in a sandbox(preventing them from writing to other memory)
+   - Developer can ask for permission outside of sandbox such as camera, GPS sensors by declaring in manifest file
+   - Manifest is read at installation time
+   - Codesigning is used with app sandboxing to provide fundamental security aspects to Android
+
+### 2.1 Deconstructing App Installation
+
+- Lack of control in app distribution is dangerous(users can install apps from other sources not just play store)
+- Figure 1 from the reading explains the process of any app being installed pretty well, I will not explain each step in this section
+
+### 2.2 Empirical Dataset
+
+- The research contains datasets from:
+   - Official and alternative app markets(Play Store, Amazon appstore, Aproov)
+   - File sharing networks: Bittorrent
+   - Malware: Infected apps from researchers
