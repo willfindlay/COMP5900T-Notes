@@ -1257,23 +1257,120 @@ based on calling application
    - above components are signed with the developer's key, included in apk files
 
 - Android Security Model
-   - One or more apps are contained in a sandbox (preventing them from writing to other memory)
-   - Developer can ask for permission outside of sandbox such as camera, GPS sensors by declaring in manifest file
-   - Manifest is read at installation time
-   - Codesigning is used with app sandboxing to provide fundamental security aspects to Android
+   - one or more apps are contained in a sandbox (preventing them from writing to other memory)
+   - developer can ask for permission outside of sandbox such as camera, GPS sensors by declaring in manifest file
+   - manifest is read at installation time
+   - codesigning is used with app sandboxing to provide fundamental security aspects to Android
 
 ### Deconstructing App Installation
 
-- Lack of control in app distribution is dangerous(users can install apps from other sources not just play store)
-- Figure 1 from the reading explains the process of any app being installed pretty well, I will not explain each step in this section
+- lack of control in app distribution is dangerous(users can install apps from other sources not just play store)
+- figure 1 from the reading explains the process of any app being installed pretty well, I will not explain each step in this section
 
 ### Empirical Dataset
 
 - The research contains datasets from:
-   - Official and alternative app markets(Play Store, Amazon appstore, Aproov)
-   - File sharing networks: Bittorrent
-   - Malware: Infected apps from researchers
+   - official and alternative app markets(Play Store, Amazon appstore, Aproov)
+   - file sharing networks: Bittorrent
+   - malware: Infected apps from researchers
 
+### 3. APP UPDATE INTEGRITY
+
+- App signing only allows the developer to push update to the app
+
+### 3.1 Signing Details
+
+- Signing is handled by jarsigner
+   - Creates RSA certificate: META-INF/NAME.RSA
+   - Creates META-INF/MANIFEST.MF(manifest of every files in the app package, not the same as AndroidManifest.xml)
+   - Creates a signature file: META-INF/NAME.SF
+      - The file may be hashed and within the file, each entry is also hashed
+   - The NAME.SF is hashed and signed
+   - Appends NAME.SF to NAME.RSA
+   
+- When an app is installed:
+   - The OS checks the signature from NAME.SF with the public keys in the RSA file
+   - It then check the correctness of the hashes between NAME.SF and MANIFEST.MF against the files in the package
+   
+- Authentication model
+   - trust-on-first-use: once an app is installed from a legit developer then developer can push updates any time. Identity of app developers are not authenticated
+ 
+- Signature Stripping
+   - Allows attackers to hijack apps by changing the signature
+   
+### 3.2 Alternative Signing Key Management
+
+- Full Authentication
+   - Uses PKI(public key infrastructure) so devs needs to prove their identity to a CA
+   - This is a model with bad tradeoff. It would require Android to decide on a list of trustworthy CAs and requires devs to get a CA
+   
+- Certificate Tree
+   - A long term self-signing key is located at the root
+   - Has many benefits such as transfer of ownership
+   - Update process will still use the leaf certificates to decide if an update is allowed
+   - Reduce replicate copies of keys
+
+- Certificate Expiration
+   - Although Google asks for validity period, it actually doesn't enforce certificate expiration during app installation
+   
+- Signature Key Updates
+   - Developer can use existing key to sign their new certificate
+   
+- Revocation of Signing Keys
+   - The only way for this to work is to remove the app from the marketplace store
+   
+- Distributed & Threshold Signing
+   - n people sign the app, and the same n people are required to sign an update
+   - this is supported in Android
+   
+### 3.3 Publicly Available Key Pairs
+
+- Apps are using a publicly available test keys. Usually sign for third-party Android builds
+   - Which means anyone else can issue an update for the app with the same key
+   - Android needs to disable installing apps with publicly distributed keys
+
+### UID ASSIGNMENT
+
+- each app have a UID
+   - apps can share UID via sharedUserId in AndroidManifest.xml[Requires same signed key]
+   - sharing UID is beneficial because APPS can access shared resources(fonts,images,sound)
+   - also allows app to use permissiosn from shared apps, which is bad
+
+### Properties for UID Sharing
+
+- Groups are Disjoint
+   - processes run under a single UID, no way for an app to be running under 2 or more groups
+
+- Groups are Consistent
+   - if app A is in the same group as B, and app A is in the same group as C, then B and C must be in the same group
+   
+- Group Size is Arbitrary
+   - it is possible to specify UID-sharing groups of size 1, 2 or greater than 2
+   
+- Membership is Authorized
+   - an app cannot join a group without being authorized to join
+  
+- Adding New Members is Efficient
+   - if a new app is added to the group, then 0,1 or all members need to be updated
+
+- Different Groups with Same Key
+   - apps with same keys can belong to different groups
+
+### Alternative Mechanisms for UID Sharing
+
+- Mutual Approval
+   - each app indicates any other app sharing same UID in manifest
+   - difficult to add new memebers because all app needs to be updated
+   - prone to group inconsistencies: A includes B and C, but B and C don't include each other
+   
+- Pairs
+   - groups can only have 2 apps max, since most groups only have 2 apps anyways
+   - satisfy group inconsistencies
+   
+- Parent-child
+   - one parent app authorizes for eevry child app
+   - parent app needs to be updated every time a child is added
+   
 ## Android Security Documentation
 
 ## Behind the Scenes of iOS Security
