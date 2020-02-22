@@ -1245,29 +1245,76 @@ based on calling application
 - new descriptors can be derived from existing ones
 - very minimal effort to use capsicum
 
-## Understanding and Improving App Installation Security Mechanisms through Empirical Analysis of Android
+# Mobile OS Security
 
-### 2. ANDROID PRELIMINARIES
+## App Isntallation Security, Barrera et al.
 
-- App Packages(.apk files)
+### Android Preliminaries
+
+- App Packages (.apk files)
    - an archive of a Dalvik file that runs on Dalvik VM
    - also has AndroidManifest.xml that contains meta info. for the app
    - above components are signed with the developer's key, included in apk files
-   
+
 - Android Security Model
-   - One or more apps are contained in a sandbox(preventing them from writing to other memory)
+   - One or more apps are contained in a sandbox (preventing them from writing to other memory)
    - Developer can ask for permission outside of sandbox such as camera, GPS sensors by declaring in manifest file
    - Manifest is read at installation time
    - Codesigning is used with app sandboxing to provide fundamental security aspects to Android
 
-### 2.1 Deconstructing App Installation
+### Deconstructing App Installation
 
 - Lack of control in app distribution is dangerous(users can install apps from other sources not just play store)
 - Figure 1 from the reading explains the process of any app being installed pretty well, I will not explain each step in this section
 
-### 2.2 Empirical Dataset
+### Empirical Dataset
 
 - The research contains datasets from:
    - Official and alternative app markets(Play Store, Amazon appstore, Aproov)
    - File sharing networks: Bittorrent
    - Malware: Infected apps from researchers
+
+## Android Security Documentation
+
+## Behind the Scenes of iOS Security
+
+- got rid of encryption on kernel caching in iOS 10
+    - turns out they didn't need it
+    - question for David: is this related to the recent unpatchable jailbreak? (note video is from 2016, jailbreak came out in 2019)
+
+### Hardened WebKit JIT Mapping
+
+- JIT compilation for javascript in Safari
+    - boost performance
+    - but with JIT, we cannot enforce codesigning
+    - (we don't necessarily know what the compilation will produce beforehand, so we cannot sign it)
+- make a concession:
+    - bring JIT to Safari, and allow JIT to emit unsigned code
+
+#### How Things Worked in iOS 9
+
+- 32MB RWX JIT memory region
+    - whoops this is actually terrible
+    - attacker writes to JIT memory region -> code execution
+
+#### Execute-Only Memory Protection
+
+- hardware support added for this in ARMv8 processor
+- added kernel support in iOS10
+- processes can now execute code *without reading it*
+
+#### The Solution
+
+- what can we do with this?
+    - create two virtual mappings to same physical JIT memory
+    - one is writable and not executable
+    - one is executable-only
+    - location of writable mapping is kept secret
+    - create special version of `memcpy` that keeps track of this secret address
+
+#### Consequences for Attackers
+
+- harder to exploit memory corruption in WebKit
+- now need to rely on return oriented programming or something similar
+
+### Secure Enclave Processor for Data Protection
