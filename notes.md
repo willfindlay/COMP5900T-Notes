@@ -1383,6 +1383,27 @@ based on calling application
 
 ## Android Security Documentation
 
+<!-- Tri -->
+### Application Sandbox
+
+<!-- Tri -->
+### Authentication
+
+<!-- Tri -->
+### Encryption
+
+<!-- Will -->
+### Keystore
+
+<!-- Will -->
+### SELinux
+
+<!-- Will -->
+### Trusty TEE
+
+<!-- Will -->
+### Verified Boot
+
 ## Behind the Scenes of iOS Security
 
 - got rid of encryption on kernel caching in iOS 10
@@ -1570,6 +1591,10 @@ based on calling application
 
 #### HSM Keys
 
+- see following table
+
+\FloatBarrier
+
 \begin{table}
 \begin{tabular}{|l|l|}
     \hline
@@ -1583,6 +1608,8 @@ based on calling application
     \hline
 \end{tabular}
 \end{table}
+
+\FloatBarrier
 
 #### Cloud Key Vault Design
 
