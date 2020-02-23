@@ -35,9 +35,7 @@ citecolor: Green
 <!-- Table of contents -->
 \newpage
 \pagenumbering{roman}
-<!--
 \tableofcontents
--->
 
 <!-- List of figs, tables, listings -->
 <!--
@@ -1371,18 +1369,18 @@ based on calling application
    - one parent app authorizes for eevry child app
    - parent app needs to be updated every time a child is added
 
-### 5. PERMISSION ASSIGNMENT
+### Permission Assignment
 
-### 5.1 Inheritance through UID sharing
+### Inheritance Through UID Sharing
 
-- allows app with same UID to have same permissions[LUL bad]
+- allows app with same UID to have same permissions (LUL bad)
 - can mitigate this issue by having the OS installer asking the user to change permissions per app
 
-### 5.2 Signature permissions
+### Signature Permissions
 
 - IPC is slow, only used to transfer small data, which is why UID sharing is used
 - Parent-child method can also be used for permission-based IPC calls
- 
+
 ## Android Security Documentation
 
 ## Behind the Scenes of iOS Security
