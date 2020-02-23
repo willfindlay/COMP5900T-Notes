@@ -1495,3 +1495,108 @@ based on calling application
 - raw file keys are not exposed to AP
     - wrapped with user keybag key for long term storage
     - wrapped with ephemeral key bound to boot session while in use
+- keys shared from SEP to sotrage controller via secure channel
+
+#### First Unlock
+
+- SpringBoard sends passcode to SEP
+- SEP generates the master key from passcode + UID hardware key
+- use master key to decrypt all class keys and add them to the key ring
+- generate random secret and encrypt master key with that secret
+    - sent random secret only to SBIO (biometric authentication in the SEP)
+    - destroy raw master key and hold onto encrypted version
+
+#### Device Lock
+
+- notify SEP, SEP purges keys from keyring according to class
+
+#### Touch ID Unlock
+
+- authenticate, send random secret back to SKS
+- SKS then decrypts the master key and uses that master key to decrypt class keys
+- add them once again to keyring
+- securely destroy master key again
+
+#### Update Later
+
+- if user chooses to update their phone later, ask for password now and enable creation of a token
+- predict using AI the last time the user will unlock phone before the window
+- create one time token at that time
+- use this token to update software
+
+#### SoC Security Mode
+
+- **demotion**
+    - devices can be demoted to enable to debugging features
+    - requires full OS erase + device is authorized
+- this demotion forces a different UID on the SEP
+- this means no access to existing user data (because wrong master key)
+
+### Synchronizing Secrets
+
+- help the Apple ecosystem share keys with each other
+- e.g. auto phone unlock from iMac or Apple Watch
+- e.g. HomeKit storing cryptographic keys
+
+#### Two Traditional Approaches
+
+1. strong random key that encrypts all others
+    - user has to take care of a key and use it for all devices
+    - losing printed key means loss of secrets
+1. wrap user secrets with KDF-derived key from password
+    - intercepting or brute forcing account password
+    - resetting account password, must prompt for old password
+    - guessing attacks
+
+#### iCloud Keychain
+
+- each device generates local key pair
+- explicitly approve new devices from a device already in the circle
+- Apple cloud backend for storage and message passing
+    - no data accessible to Apple
+    - backend is not in a privileged position
+
+#### Backend Attack Surface
+
+- limit attack surface
+- no brute force
+- solution? key unwrapping only takes place in hardware security modules
+
+#### Cloud Key Vault
+
+- HSMs running custom secure code
+- key vault fleet operates its own CA (private key never leaves hardware)
+- each iOS device hardcodes key vault fleet CA cert
+
+#### HSM Keys
+
+\begin{table}
+\begin{tabular}{|l|l|}
+    \hline
+    Key & Description\\
+    \hline
+    \hline
+    CSCIK & custom secure code signing key, signs custom secure code to run on HSM \\
+    AK & authenticate messages between vault units \\
+    CA & certify SK \\
+    SK & unwrap escrow records \\
+    \hline
+\end{tabular}
+\end{table}
+
+#### Cloud Key Vault Design
+
+- kind of like SEP data protection for escrow records
+- private key material not available to mutable software
+- group units into "clubs"
+    - provides redundancy, but does not solve brute force
+    - vulnerable to partitioning attacks to defeat rate limiting
+- to solve brute force, we require majority votes from all club members to proceed
+
+#### Protecting CSCIK
+
+- three physical cards
+- place in evidence bags
+- send to three departments
+- all three are needed to decrypt CSCIK
+- destroy cards after use
