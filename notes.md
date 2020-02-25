@@ -1393,13 +1393,132 @@ based on calling application
 ### Encryption
 
 <!-- Will -->
-### Keystore
+### Hardware-Backed Keystore
+
+- dedicated chip (SoC -> system on a chip) for cryptographic operations and keystore
+
+#### Before Android 6.0
+
+- simple hardware-backed crypto API
+- operations?
+    - digital sign, verify
+    - generate, import signing key pairs
+- this functionality is okay, but misses several security goals
+
+#### Since Android 6.0
+
+- symmetric crypto primitives
+- AES, HMAC
+- access control system for hardware-backed keys
+- usage control scheme for limiting key usage (ephemeral keys)
+
+#### Since Android 7.0
+
+- key attestation
+    - public key certificates describing key and access controls
+    - provides remote verifiability for keys
+- version binding
+    - bind keys to OS and patch version
+    - ensures attackers cannot roll device back to vulnerable version and use existing keys
+    - when upgrading to new version, keys are upgraded before they can be used
+
+#### Since Android 8.0
+
+- no longer express hardware abstraction layer (HAL) in C-style structs
+    - now, use higher level HIDL (hardware interface definition language) to generate C++
+- ID attestation
+    - optionally strongly identify hardware identifiers
+    - e.g. device name, device serial number, phone ID, etc.
+
+#### Since Android 9.0
+
+- embedded secure elements
+- secure key import
+- 3DES encryption
+- separately set version binding for `boot.img` and `system.img` (independent updates)
+
+#### Glossary of Android Keystore Terms
+
+- `AndroidKeystore`
+    - API used by apps to access keystore functionality
+    - forwards requests to keystore daemon
+- `keystore daemon`
+    - system daemon that provides access to all keystore functionality
+    - stores encrypted key blobs
+- `keymasterd`
+    - provides access to Keymaster TA (trusted application)
+- `Keymaster TA`
+    - runs in a secure TCE (like an SoC)
+    - provides all keystore operations
+    - has access to raw keying material
+- `LockSettingsService`
+    - responsible for user authentication
+    - not part of the keystore, but many keystore services require user authentication
+    - interacts with Gatekeeper TA and Fingerprint TA
+- `Gatekeeper TA`
+    - authenticates user passwords
+    - generates authentication tokens
+        - (proves to Keymaster TA that authentication was done for a particular user at a particular point in time)
+- `Fingerprint TA`
+    - like Gatekeeper, but for fingerprints
+
+#### Architecture
+
+- client makes a shared library call to Keymaster HAL (just a shared library provided by OEM)
+    - this keymaster HAL is no accessed directly by applications, used by platform-internal components
+- shared library accesses kernel interface
+- kernel interface accesses keymaster in TCE hardware
 
 <!-- Will -->
 ### SELinux
 
+- Android can use SELinux for MAC
+    - augments traditional DAC, just like we have seen
+- for Android 4.3 and higher
+
+#### Background
+
+- Android security model is based on sandboxing
+- each application runs in its own sandbox
+- Android 4.3 -> everything permissive, Android 4.4 -> partial enforcement
+- after Android 5.0 -> full enforcement
+    - over 60 domains
+- Android 6.0 -> further reduced permissiveness
+    - better isolation between users
+    - ioctl filtering
+    - tightening domains
+    - limited access to `/proc`
+- Android 7.0 -> even further lockdown
+    - break up mediaserver stack into smaller processes, reduced permission scope
+- Android 8.0 -> update SELinux to work with Treble
+    - separate lower level vendor code from Android system framework
+    - compatibility issues if platform version is higher than vendor version?
+        - no, we have a method to retain compatibility
+
 <!-- Will -->
 ### Trusty TEE
+
+- separate OS from Android
+- runs on same processor, but isolated from the rest of the system
+    - protected from malicious apps
+    - protected from Android vulnerabilities
+- provides a trusted execution environment for Android TCB
+
+#### Architecture
+
+- kernel is derived from Little Kernel (not Linux)
+- driver in Linux kernel to transfer data back and forth
+- userspace library for Android to communicate with trusted applications via kernel driver
+
+![Design of trusty, from Android docs.](./figs/7-mobile/android-arch.png)
+
+#### Advantages of Trusty
+
+- free and open source
+- provides transparency to OEM and SoC vendors
+- OEM and SoC vendors no longer need to pay fees to get a good TEE
+
+#### Applications and Services
 
 <!-- Will -->
 ### Verified Boot
