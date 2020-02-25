@@ -1386,11 +1386,52 @@ based on calling application
 <!-- Tri -->
 ### Application Sandbox
 
+- Application sandbox happens by giving each app a unqiue UID
+- Android uses other enforcements on top of DAC
+   - SELinux provides MAC to seperate system and apps
+   - Default DAC permissions on app's home dir is 700 instead of 751
+   - Apps run with seccomp-bpf
+- Android stops allowing data to be world readable with sdk >=28
+   - To share data with other apps, use content providers
+   - If data that are meant to be world readable(images, videos) then use MediaStore
+   - requestLegacyExternalStorage manifest flag
+
 <!-- Tri -->
 ### Authentication
 
+- Cryptographic key storage and service provider
+   - Stores crypto keys and provides standard crypto routine
+- User authenticators
+   - Authenticate user's presence
+   - Gatekeeper for PIN/password/pattern
+   - Fingerprint is for fingerprint
+- Enrollment
+   - Default is Gatekeeper(Pin/password/pattern)
+   - Creates 64-bit secure identifier(SID)
+   - SID is bound to the password
+   - User who change credentials must provide same credentials before creating new credentials
+   - If user doesn't provide old credentials, leads to untrusted enroll(stops attackers)
+- Authentication flow can be seen on Figure of website
+   - User provides PIN/password or biometric
+   - Associated service(LockSettingsService,Fingerprintservice) makes a request to a specific daemon(gatekeeperd,fingerprintd)
+   - Daemon sends data to counterpart component(Gatekeeper,Fingerprint) in TEE, then responds with AuthToken with the user's SID
+   - Daemon passes the AuthToken to the keystore service
+   - Keystore service the token to Keymaster to verify  using the key shared with Gatekeeper. Uses the timestamp to allow an app to use the key
+- Device boot flow
+   - Authtoken HMAC key is generated every time a device reboots
+   - Contains TEE components(Gatekeeper,Keymaster,and other biometrics info)
+   - Uses IPC to communicated between Keymaster and Gatekeeper
+   - Key only exists inside of TEE
+   
 <!-- Tri -->
 ### Encryption
+
+- Uses symmetric key encryption
+- Includes file based encryption and full-disk encryption
+- File based encryption allows each file to be encrypted independtly
+- Metadata encryption a key(protected by Keymaster) presented at boot time, allows to encrypt metadata(dir layout,file sizes,permissions,etc)
+- Full-disk encryption uses a single key(protected by user's password) to protect the entire partition
+   - Functionality is not immediately available at boot time, since services are not available
 
 <!-- Will -->
 ### Keystore
