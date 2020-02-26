@@ -1422,7 +1422,7 @@ based on calling application
    - Contains TEE components(Gatekeeper,Keymaster,and other biometrics info)
    - Uses IPC to communicated between Keymaster and Gatekeeper
    - Key only exists inside of TEE
-   
+
 <!-- Tri -->
 ### Encryption
 
@@ -1544,6 +1544,8 @@ based on calling application
     - protected from malicious apps
     - protected from Android vulnerabilities
 - provides a trusted execution environment for Android TCB
+- main processor is now referred to as "untrusted"
+    - limited access to areas of RAM, registers, write-once fuses
 
 #### Architecture
 
@@ -1561,8 +1563,40 @@ based on calling application
 
 #### Applications and Services
 
+- Trusty applications have
+    - collection of binary files
+    - binary manifest
+    - signature
+- application runtime
+    - isolated processes (virtual memory sandbox)
+    - unprivileged mode within Trusty kernel
+- no third-party apps
+- each app run in Trusty increases size of system TCB
+
 <!-- Will -->
 ### Verified Boot
+
+- ensures that all executed code comes from a trusted source
+    - e.g. device OEM
+- establish full chain of trust from hardware protected root to
+    - bootloader
+    - boot partition
+    - other verified partitions
+- during boot, each stage verifies integrity of next stage
+- tl;dr, ensure devices are running a safe version of Android
+
+#### Rollback Protection
+
+- check correct version of OS
+- ensure devices only update to newer versions of Android
+
+#### Android Versions
+
+- 4.4 adds trusted boot
+    - warn users only
+- 7.0 and later strictly enforces
+- 8.0 includes AVB (Android Verified Boot), reference implementation of verified boot
+    - works with project Treble (re-architect of Android framework)
 
 ## Behind the Scenes of iOS Security
 
