@@ -1301,6 +1301,7 @@ based on calling application
 1. Update integrity verified
     - check signing key certificate and package integrity with key
     - check if already installed (if so do we have same certificate?)
+        - if not same certificate, treat as initial installation (confirm with David)
 1. UID is assigned
     - already installed and same certificate -> add to exiting UID
     - new app means either share a UID or get a new one
@@ -1322,99 +1323,146 @@ based on calling application
 ### App Update Integrity
 
 - app signing only allows the developer to push update to the app
+- app package must be signed with at least one key
+- packages contain self-signed certificate
+    - updates must be signed with same key specified by cert
 
 #### Signing Details
 
-- signing is handled by jarsigner
-   - creates RSA certificate: META-INF/NAME.RSA
-   - creates META-INF/MANIFEST.MF(manifest of every files in the app package, not the same as AndroidManifest.xml)
-   - creates a signature file: META-INF/NAME.SF
-      - the file may be hashed and within the file, each entry is also hashed
-   - the NAME.SF is hashed and signed
-   - appends NAME.SF to NAME.RSA
-
+- signing is handled by `jarsigner`
+- creates RSA or DSA certificate: `META-INF/NAME.RSA` (or DSA)
+- creates `META-INF/MANIFEST.MF` (manifest of every files in the app package, not the same as `AndroidManifest.xml`)
+- creates a signature file: `META-INF/NAME.SF`
+    - the file may be hashed and within the file, each entry is also hashed
+- the `NAME.SF` is hashed and signed
+- appends `NAME.SF` signature to `NAME.RSA`
 - when an app is installed:
-   - the OS checks the signature from NAME.SF with the public keys in the RSA file
-   - it then check the correctness of the hashes between NAME.SF and MANIFEST.MF against the files in the package
+   - the OS checks the signature from `NAME.SF` with the public keys in the RSA file
+   - it then check the correctness of the hashes between `NAME.SF` and `MANIFEST.MF` against the files in the package
 
-- authentication model
-   - trust-on-first-use: once an app is installed from a legit developer then developer can push updates any time. Identity of app developers are not authenticated
+##### Authentication Model
 
-- signature Stripping
-   - allows attackers to hijack apps by changing the signature
+- TOFU approach to app signing
+    - initially no authentication (take a leap of faith)
+    - subsequently, authenticate with signature
+- apps can also have CA-issued certificates
+    - specified in `META-INF/NAME.RSA`
+    - but no root CAs specified via out-of-band channel
+    - instead, self-signing root CAs are accepted via TOFU
+    - this practice is also very rare
+
+##### Signature Stripping
+
+- modification to signed app causes signature to failure
+- developers can replace old signatures with new signature + self-signed certificate
+- for new installations, accept any signature accompanied by self-signed certificate
+    - in contrast, iOS apps must be signed by Apple
+- malicious developers can weaponing an app and issue a new signature with a self-signed certificate
+
+##### Maintaining a Reputation
+
+- over time, developers can build an unforgeable reputation
+- often sign multiple apps with one or two keys
+- can result in positive or negative security assertions
+    - signer of this app also signed many other trusted apps; or
+    - signer of this app also signed known malware
 
 #### Alternative Signing Key Management
 
-- full Authentication
-   - uses PKI(public key infrastructure) so devs needs to prove their identity to a CA
-   - this is a model with bad tradeoff. It would require Android to decide on a list of trustworthy CAs and requires devs to get a CA
+##### Full Authentication
+- use full PKI (public key infrastructure) so devs needs to prove their identity to a CA
+- good security in theory
+- in practice, added complexity makes this a bad trade-off
+    - likely would not be adopted by the community
 
-- certificate Tree
-   - a long term self-signing key is located at the root
-   - has many benefits such as transfer of ownership
-   - update process will still use the leaf certificates to decide if an update is allowed
-   - reduce replicate copies of keys
+##### Certificate Tree
+- a long term self-signing key is located at the root
+    - issue short term certificates for each app as leaf nodes
+- update process will still use the leaf certificates to decide if an update is allowed
+- reduce the need to replicate copies of keys
 
-- certificate Expiration
-   - although Google asks for validity period, it actually doesn't enforce certificate expiration during app installation
+##### Certificate Expiration
+- Android asks to specify validity period...
+    - but this is not enforced
+    - therefore, compromised keys can be used indefinitely
+- Android also specifies that certificates should be valid until at least 2033
+    - this is poor security practice
 
-- signature Key Updates
-   - developer can use existing key to sign their new certificate
+##### Signature Key Updates
+- no method for updating keys currently
+- switching keys requires new installation, losing all data
+    - e.g., in the case of Google Authenticator
+- proposed alternative:
+    - allow old key to sign new certificate with new key
 
-- revocation of Signing Keys
-   - the only way for this to work is to remove the app from the marketplace store
+##### Revocation of Signing Keys
+- no current method for key revocation
+- this problem is compounded by lack of expiration enforcement
+- the only way to sort of achieve key revocation is either
+    - remove apps from marketplace; or
+    - use a kill switch
+- sideloaded apps are completely immune to the above to methods
+- an alternative could be to enforce a key blacklist via an OS update
 
-- distributed & Threshold Signing
-   - n people sign the app, and the same n people are required to sign an update
-   - this is supported in Android
+##### Distributed and Threshold Sharing
+- counteract the theft of signing keys
+- $n$ people sign the app, and the same $n$ people are required to sign an update
+- this is supported in Android
+- problems with current implementation?
+    - signatures can be selectively stripped
+    - solution is to allow developers to explicitly specify multiple required keys
+    - also a good idea to allow developers to specify a $t$-out-of-$n$ agreement requirement
 
 #### Publicly Available Key Pairs
 
-- apps are using a publicly available test keys. Usually sign for third-party Android builds
+- apps are using a publicly available test keys
    - which means anyone else can issue an update for the app with the same key
-   - android needs to disable installing apps with publicly distributed keys
+   - android needs to disable installing apps with publicly available key pairs
 
 ### UID Assignment
 
-- each app have a UID
-   - apps can share UID via sharedUserId in AndroidManifest.xml[Requires same signed key]
-   - sharing UID is beneficial because APPS can access shared resources(fonts,images,sound)
-   - also allows app to use permissiosn from shared apps, which is bad
+- each app has a UID (in general, they get their own, but can also share)
+   - apps can share UID via `sharedUserId` in `AndroidManifest.xml` (requires same signed key)
+   - sharing UID is beneficial because apps can access shared resources (fonts,images,sound)
+   - also allows an app to use permissions from shared apps, which is bad
+
+#### Problem with Android's UID Sharing
+
+- UID sharing depends on app signing
+    - conflicts with reputation-based model of app signing protocol
+    - encourages developers to circumvent the policy, such as using IPC
+        - which is less secure, more open to error
 
 #### Properties for UID Sharing
 
-- groups are Disjoint
+1. Groups are Disjoint
    - processes run under a single UID, no way for an app to be running under 2 or more groups
-
-- groups are Consistent
+1. Groups are Consistent
    - if app A is in the same group as B, and app A is in the same group as C, then B and C must be in the same group
-
-- group Size is Arbitrary
+1. Group Size is Arbitrary
    - it is possible to specify UID-sharing groups of size 1, 2 or greater than 2
-
-- membership is Authorized
+1. Membership is Authorized
    - an app cannot join a group without being authorized to join
-
-- adding New Members is Efficient
+1. Adding New Members is Efficient
    - if a new app is added to the group, then 0,1 or all members need to be updated
-
-- different Groups with Same Key
-   - apps with same keys can belong to different groups
+1. Different Groups with Same Key
+   - apps signed with same key(s) can belong to different groups
 
 #### Alternative Mechanisms for UID Sharing
 
-- mutual Approval
+- Mutual Approval
    - each app indicates any other app sharing same UID in manifest
-   - difficult to add new memebers because all app needs to be updated
+   - difficult to add new members because all apps need to be updated
    - prone to group inconsistencies: A includes B and C, but B and C don't include each other
-
-- pairs
+- Pairs
    - groups can only have 2 apps max, since most groups only have 2 apps anyways
    - satisfy group inconsistencies
-
-- parent-child
+   - this may cause backwards compatibility issues with existing apps
+- Parent-Child
    - one parent app authorizes for eevry child app
    - parent app needs to be updated every time a child is added
+   - in order to implement, need to add new XML attributes to Android package installer framework API
+     - these attributes would show up in the application manifest
 
 ### Permission Assignment
 
@@ -1425,7 +1473,7 @@ based on calling application
 
 #### Signature Permissions
 
-- iPC is slow, only used to transfer small data, which is why UID sharing is used
+- IPC is slow, only used to transfer small data, which is why UID sharing is used
 - parent-child method can also be used for permission-based IPC calls
 
 ## Android Security Documentation
