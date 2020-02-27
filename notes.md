@@ -1245,87 +1245,134 @@ based on calling application
 
 # Mobile OS Security
 
-## App Isntallation Security, Barrera et al.
+## App Installation Security, Barrera et al.
+
+- explore Android app installation security decisions
+    - update integrity
+    - UID assignment (each app gets its own UID)
+    - permissions assignment
+- Android Observatory
+    - interface to database with security metadata about app packages
+    - created by Barrera et al. to make their work publicly available
 
 ### Android Preliminaries
 
-- App Packages (.apk files)
-   - an archive of a Dalvik file that runs on Dalvik VM
-   - also has AndroidManifest.xml that contains meta info. for the app
-   - above components are signed with the developer's key, included in apk files
+##### App Packages (.apk files)
+- an archive of
+    - a Dalvik file that runs on Dalvik VM
+    - other resources (images, audio, etc.)
+- also has `AndroidManifest.xml` that contains metadata for the app
+    - package name
+    - version
+    - supported Android versions
+    - etc.
+- above components are signed with the developer's key
+    - certificate can be self-signed
+    - included in the `.apk` archive
 
-- Android Security Model
-   - one or more apps are contained in a sandbox (preventing them from writing to other memory)
-   - developer can ask for permission outside of sandbox such as camera, GPS sensors by declaring in manifest file
-   - manifest is read at installation time
-   - codesigning is used with app sandboxing to provide fundamental security aspects to Android
+##### Android Security Model
+- based on the application sandbox
+    - enforce isolation, prevent apps from interfering with one another
+    - each sandbox gets a different UID
+    - sandbox may contain one or more apps
+- developer can ask for permission outside of sandbox
+    - include privileges in manifest file
+    - camera, GPS sensor, microphone, etc.
+    - user accepts or rejects this set of permissions at install time
+- codesigning
+    - restrict who can issue updates to the app
+    - restrict app's IPC capabilities
+    - restrict whether certain permissions can be obtained
+- `MASTER_CLEAR` example
+    - allows phone to be factory reset
+    - apps can request this permissions, but need to be signed by same key as the system image
+- developers can write public APIs and require their own signature-level permissions
 
-### Deconstructing App Installation
+#### Deconstructing App Installation
 
-- lack of control in app distribution is dangerous(users can install apps from other sources not just play store)
-- figure 1 from the reading explains the process of any app being installed pretty well, I will not explain each step in this section
+- many ways of getting apps
+    - official play store
+    - third party markets
+    - sideloading
+- no distribution enforcement means we need strong OS enforcement
 
-### Empirical Dataset
+![Model of Android `.apk` installation process from Barrera et al.](./figs/7-mobile/barrera.png)
 
-- The research contains datasets from:
-   - official and alternative app markets(Play Store, Amazon appstore, Aproov)
+1. Update integrity verified
+    - check signing key certificate and package integrity with key
+    - check if already installed (if so do we have same certificate?)
+1. UID is assigned
+    - already installed and same certificate -> add to exiting UID
+    - new app means either share a UID or get a new one
+    - if we are sharing, check that we have the same certificate
+1. Permissions are assigned to UID
+    - user is prompted to accept permissions
+    - when UID is not shared, permissions are read from manifest
+    - when UID is shared, UID gets union of existing permissions and new permissions
+
+#### Empirical Dataset
+
+- the research contains datasets from:
+   - official and alternative app markets (Play Store, Amazon appstore, Aproov)
    - file sharing networks: Bittorrent
    - malware: Infected apps from researchers
+- download packages, scrape metadata, repeat
+    - particular emphasis on signing keys
 
 ### App Update Integrity
 
-- App signing only allows the developer to push update to the app
+- app signing only allows the developer to push update to the app
 
-### Signing Details
+#### Signing Details
 
-- Signing is handled by jarsigner
-   - Creates RSA certificate: META-INF/NAME.RSA
-   - Creates META-INF/MANIFEST.MF(manifest of every files in the app package, not the same as AndroidManifest.xml)
-   - Creates a signature file: META-INF/NAME.SF
-      - The file may be hashed and within the file, each entry is also hashed
-   - The NAME.SF is hashed and signed
-   - Appends NAME.SF to NAME.RSA
+- signing is handled by jarsigner
+   - creates RSA certificate: META-INF/NAME.RSA
+   - creates META-INF/MANIFEST.MF(manifest of every files in the app package, not the same as AndroidManifest.xml)
+   - creates a signature file: META-INF/NAME.SF
+      - the file may be hashed and within the file, each entry is also hashed
+   - the NAME.SF is hashed and signed
+   - appends NAME.SF to NAME.RSA
 
-- When an app is installed:
-   - The OS checks the signature from NAME.SF with the public keys in the RSA file
-   - It then check the correctness of the hashes between NAME.SF and MANIFEST.MF against the files in the package
+- when an app is installed:
+   - the OS checks the signature from NAME.SF with the public keys in the RSA file
+   - it then check the correctness of the hashes between NAME.SF and MANIFEST.MF against the files in the package
 
-- Authentication model
+- authentication model
    - trust-on-first-use: once an app is installed from a legit developer then developer can push updates any time. Identity of app developers are not authenticated
 
-- Signature Stripping
-   - Allows attackers to hijack apps by changing the signature
+- signature Stripping
+   - allows attackers to hijack apps by changing the signature
 
-### Alternative Signing Key Management
+#### Alternative Signing Key Management
 
-- Full Authentication
-   - Uses PKI(public key infrastructure) so devs needs to prove their identity to a CA
-   - This is a model with bad tradeoff. It would require Android to decide on a list of trustworthy CAs and requires devs to get a CA
+- full Authentication
+   - uses PKI(public key infrastructure) so devs needs to prove their identity to a CA
+   - this is a model with bad tradeoff. It would require Android to decide on a list of trustworthy CAs and requires devs to get a CA
 
-- Certificate Tree
-   - A long term self-signing key is located at the root
-   - Has many benefits such as transfer of ownership
-   - Update process will still use the leaf certificates to decide if an update is allowed
-   - Reduce replicate copies of keys
+- certificate Tree
+   - a long term self-signing key is located at the root
+   - has many benefits such as transfer of ownership
+   - update process will still use the leaf certificates to decide if an update is allowed
+   - reduce replicate copies of keys
 
-- Certificate Expiration
-   - Although Google asks for validity period, it actually doesn't enforce certificate expiration during app installation
+- certificate Expiration
+   - although Google asks for validity period, it actually doesn't enforce certificate expiration during app installation
 
-- Signature Key Updates
-   - Developer can use existing key to sign their new certificate
+- signature Key Updates
+   - developer can use existing key to sign their new certificate
 
-- Revocation of Signing Keys
-   - The only way for this to work is to remove the app from the marketplace store
+- revocation of Signing Keys
+   - the only way for this to work is to remove the app from the marketplace store
 
-- Distributed & Threshold Signing
+- distributed & Threshold Signing
    - n people sign the app, and the same n people are required to sign an update
    - this is supported in Android
 
-### Publicly Available Key Pairs
+#### Publicly Available Key Pairs
 
-- Apps are using a publicly available test keys. Usually sign for third-party Android builds
-   - Which means anyone else can issue an update for the app with the same key
-   - Android needs to disable installing apps with publicly distributed keys
+- apps are using a publicly available test keys. Usually sign for third-party Android builds
+   - which means anyone else can issue an update for the app with the same key
+   - android needs to disable installing apps with publicly distributed keys
 
 ### UID Assignment
 
@@ -1334,94 +1381,94 @@ based on calling application
    - sharing UID is beneficial because APPS can access shared resources(fonts,images,sound)
    - also allows app to use permissiosn from shared apps, which is bad
 
-### Properties for UID Sharing
+#### Properties for UID Sharing
 
-- Groups are Disjoint
+- groups are Disjoint
    - processes run under a single UID, no way for an app to be running under 2 or more groups
 
-- Groups are Consistent
+- groups are Consistent
    - if app A is in the same group as B, and app A is in the same group as C, then B and C must be in the same group
 
-- Group Size is Arbitrary
+- group Size is Arbitrary
    - it is possible to specify UID-sharing groups of size 1, 2 or greater than 2
 
-- Membership is Authorized
+- membership is Authorized
    - an app cannot join a group without being authorized to join
 
-- Adding New Members is Efficient
+- adding New Members is Efficient
    - if a new app is added to the group, then 0,1 or all members need to be updated
 
-- Different Groups with Same Key
+- different Groups with Same Key
    - apps with same keys can belong to different groups
 
-### Alternative Mechanisms for UID Sharing
+#### Alternative Mechanisms for UID Sharing
 
-- Mutual Approval
+- mutual Approval
    - each app indicates any other app sharing same UID in manifest
    - difficult to add new memebers because all app needs to be updated
    - prone to group inconsistencies: A includes B and C, but B and C don't include each other
 
-- Pairs
+- pairs
    - groups can only have 2 apps max, since most groups only have 2 apps anyways
    - satisfy group inconsistencies
 
-- Parent-child
+- parent-child
    - one parent app authorizes for eevry child app
    - parent app needs to be updated every time a child is added
 
 ### Permission Assignment
 
-### Inheritance Through UID Sharing
+#### Inheritance Through UID Sharing
 
 - allows app with same UID to have same permissions (LUL bad)
 - can mitigate this issue by having the OS installer asking the user to change permissions per app
 
-### Signature Permissions
+#### Signature Permissions
 
-- IPC is slow, only used to transfer small data, which is why UID sharing is used
-- Parent-child method can also be used for permission-based IPC calls
+- iPC is slow, only used to transfer small data, which is why UID sharing is used
+- parent-child method can also be used for permission-based IPC calls
 
 ## Android Security Documentation
 
-<!-- Tri -->
+<!-- tri -->
 ### Application Sandbox
 
-- Application sandbox happens by giving each app a unqiue UID
+- application sandbox happens by giving each app a unqiue UID
 - Android uses other enforcements on top of DAC
    - SELinux provides MAC to seperate system and apps
-   - Default DAC permissions on app's home dir is 700 instead of 751
-   - Apps run with seccomp-bpf
+   - default DAC permissions on app's home dir is 700 instead of 751
+   - apps run with seccomp-bpf
 - Android stops allowing data to be world readable with sdk >=28
-   - To share data with other apps, use content providers
-   - If data that are meant to be world readable(images, videos) then use MediaStore
+   - to share data with other apps, use content providers
+   - if data that are meant to be world readable(images, videos) then use MediaStore
    - requestLegacyExternalStorage manifest flag
 
 <!-- Tri -->
 ### Authentication
 
-- Cryptographic key storage and service provider
-   - Stores crypto keys and provides standard crypto routine
-- User authenticators
-   - Authenticate user's presence
-   - Gatekeeper for PIN/password/pattern
-   - Fingerprint is for fingerprint
-- Enrollment
-   - Default is Gatekeeper(Pin/password/pattern)
-   - Creates 64-bit secure identifier(SID)
-   - SID is bound to the password
-   - User who change credentials must provide same credentials before creating new credentials
-   - If user doesn't provide old credentials, leads to untrusted enroll(stops attackers)
-- Authentication flow can be seen on Figure of website
-   - User provides PIN/password or biometric
-   - Associated service(LockSettingsService,Fingerprintservice) makes a request to a specific daemon(gatekeeperd,fingerprintd)
-   - Daemon sends data to counterpart component(Gatekeeper,Fingerprint) in TEE, then responds with AuthToken with the user's SID
-   - Daemon passes the AuthToken to the keystore service
-   - Keystore service the token to Keymaster to verify  using the key shared with Gatekeeper. Uses the timestamp to allow an app to use the key
-- Device boot flow
-   - Authtoken HMAC key is generated every time a device reboots
-   - Contains TEE components(Gatekeeper,Keymaster,and other biometrics info)
-   - Uses IPC to communicated between Keymaster and Gatekeeper
-   - Key only exists inside of TEE
+- cryptographic key storage and service provider
+   - stores crypto keys and provides standard crypto routine
+- user authenticators
+   - authenticate user's presence
+   - gatekeeper for PIN/password/pattern
+   - fingerprint is for fingerprint
+- enrollment
+   - default is Gatekeeper(Pin/password/pattern)
+   - creates 64-bit secure identifier(SID)
+   - sID is bound to the password
+   - user who change credentials must provide same credentials before creating new credentials
+   - if user doesn't provide old credentials, leads to untrusted enroll(stops attackers)
+- authentication flow can be seen on Figure of website
+   - user provides PIN/password or biometric
+   - associated service(LockSettingsService,Fingerprintservice) makes a request to a specific daemon(gatekeeperd,fingerprintd)
+   - daemon sends data to counterpart component(Gatekeeper,Fingerprint) in TEE, then responds with AuthToken with the user's SID
+   - daemon passes the AuthToken to the keystore service
+   - keystore service the token to Keymaster to verify  using the key shared with Gatekeeper. Uses the timestamp to allow an app to use the key
+- device boot flow
+   - authtoken HMAC key is generated every time a device reboots
+   - contains TEE components(Gatekeeper,Keymaster,and other biometrics info)
+   - uses IPC to communicated between Keymaster and Gatekeeper
+   - key only exists inside of TEE
 
 <!-- Tri -->
 ### Encryption
