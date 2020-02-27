@@ -10,11 +10,6 @@ date: \today
 subparagraph: yes
 documentclass: findlay
 header-includes:
-    - \usepackage[T1]{fontenc}
-    - \usepackage{cmap}
-    - \input{glyphtounicode}
-    - \pdfgentounicode=1
-    - \usepackage{enumitem}
 classoption:
     - 12pt
 numbersections: true
@@ -1468,11 +1463,13 @@ based on calling application
 
 #### Inheritance Through UID Sharing
 
-- allows app with same UID to have same permissions (LUL bad)
+- allows app with same UID to have same permissions
 - can mitigate this issue by having the OS installer asking the user to change permissions per app
 
 #### Signature Permissions
 
+- define public interaces, make them available with signature-level permissions
+    - granted to caller if and only if signed with same key as callee
 - IPC is slow, only used to transfer small data, which is why UID sharing is used
 - parent-child method can also be used for permission-based IPC calls
 
