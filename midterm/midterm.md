@@ -46,11 +46,13 @@ citecolor: Green
 
 ## General-Purpose vs Task-Specific OS
 
-## Task-Specific OS Activity (Word Processor)
+## Activity: Design a Task-Specific OS
 
 # Secure OS
 
 # Multics
+
+## Activity: Multics Security Evaluation
 
 # UNIX (and UNIX-Like) Security
 
@@ -77,7 +79,7 @@ citecolor: Green
 - setuid binaries can be compromised -> this can be used to get a root shell, then entire TCB is compromised (see above)
 - network facing daemons can be compromised (these are often listening on privileged ports)
 
-## My Answers to UNIX Quiz
+## Activity: My Answers to UNIX Quiz
 
 #### Question 1
 
@@ -119,9 +121,27 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 # MAC
 
+## Linux Security Modules
+
+## SELinux
+
 # UNIX Sandboxing
 
+## Linux `seccomp(2)` and `seccomp-bpf(2)`
+
+## OpenBSD `pledge(2)`
+
+## FreeBSD `capsicum(4)`
+
+## Sandboxing Acitivity: Compare the Three Alternatives
+
 # Mobile OS Security
+
+## Android
+
+## iOS
+
+## Activity: Comparing Android, iOS, and Desktop
 
 
 
