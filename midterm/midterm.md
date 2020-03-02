@@ -62,6 +62,8 @@ citecolor: Green
 
 ## Access Control Fundamentals
 
+## Activity: Design a Reference Monitor for a Real Life Situation
+
 # Multics
 
 ## Activity: Multics Security Evaluation
@@ -137,6 +139,8 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## SELinux
 
+## Activity: Compare Custom SELinux Policy with Real SELinux Policy
+
 # UNIX Sandboxing
 
 ## Linux `seccomp(2)` and `seccomp-bpf(2)`
@@ -145,7 +149,7 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## FreeBSD `capsicum(4)`
 
-## Sandboxing Acitivity: Compare the Three Alternatives
+## Acitivity: Compare the Three Alternatives
 
 # Mobile OS Security
 
