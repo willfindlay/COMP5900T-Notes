@@ -66,6 +66,8 @@ citecolor: Green
 
 # Multics
 
+## Activity: Using Multics
+
 ## Activity: Multics Security Evaluation
 
 # UNIX (and UNIX-Like) Security
