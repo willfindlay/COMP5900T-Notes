@@ -46,7 +46,32 @@ citecolor: Green
 
 ## General-Purpose vs Task-Specific OS
 
+#### General-Purpose
+
+- conventional OSes -> run lots of programs on a variety of hardware
+- difficult to secure -> verifiability was a problem
+- why do we use these? absract hardware, don't want to reinvent the wheel
+    - writing a new task-specific operating system for every machine, use case, is an exercise in futility
+    - we trade security guarantees for features
+
+#### Task-Specific
+
+- minimal OSes designed for one specific task
+- e.g., electric thermometer computer
+- much easier to secure
+
 ## Activity: Design a Task-Specific OS
+
+- e.g. write a task-specific OS for a Word Processor
+    - custom scheduler for Word Processor threads
+    - driver for monitor
+    - driver for disk (long-term storage)
+    - driver for memory (how to store work temporarily)
+    - need to process hardware interrupts (from keyboard input)
+    - maybe driver for a printer?
+- the main takeaway: these things are *tedious*
+    - we don't want to write a task-specific OS for every application
+    - trying to write a program without an OS leads us to essentially design a task-specific OS
 
 # Secure OS
 
