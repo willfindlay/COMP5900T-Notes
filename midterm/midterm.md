@@ -258,11 +258,16 @@ citecolor: Green
 #### ACLs
 
 - each object (segment) has an ACL that specified allowed operations for subjects (processes)
+- ACL is stored in parent directory
 - entries are
     - `r` read
     - `w` write
     - `e` execute (`x` in UNIX)
-- ACL entry for a process is included in its SDW for the segment
+- for directories, 3 extra entries
+    - `s`
+    - `m`
+    - `a`
+- a process' ACL entry for a segment is also included in its SDW
 
 #### Protection Rings
 
