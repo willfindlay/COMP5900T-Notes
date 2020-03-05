@@ -381,6 +381,21 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## Linux Security Modules
 
+- a framework for implementing security policy with kernel modules
+- added LSM hooks to security-sensitive operations
+- new LSM module type can use these hooks to enforce policy
+- SELinux is an example of an LSM module
+
+#### What is Good About LSM?
+
+- low overhead (debatable)
+- flexible (you can do a lot of different things with it)
+    - can implement MAC
+    - can implement POSIX capabilities (whitelist above DAC)
+- users can plug and play security policies they want
+    - can use SELinux, POSIX capabilities, or anything else
+- provides a general solution to Linux security, rather than forcing one or two options
+
 ## SELinux
 
 ## Activity: Compare Custom SELinux Policy with Real SELinux Policy
