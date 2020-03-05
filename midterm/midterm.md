@@ -94,7 +94,7 @@ citecolor: Green
     - authorization module
     - policy store
 
-![The reference monitor model.](./figs/refmon.png){width=80%}
+![The reference monitor model.](./figs/refmon.png){width=65%}
 
 \FloatBarrier
 
