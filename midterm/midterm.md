@@ -263,10 +263,13 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 Hardware-based key manager isolated from main processor. Responsible for cryptography functions and key storing. Keys can never leave secure enclave.
 
-With keys being stored on Secure Enclave, it helps to further their goal of privacy. So when there are criminal cases, **gov can't ask Apple for key to unlock phone**. Apple no longer has the master key, due to master key being set via fuse in factor, encrypted, then destroyed.
+With keys being stored on Secure Enclave, it helps to further their goal of privacy. So when there are criminal
+cases, **gov can't ask Apple for key to unlock phone**.
+Apple no longer has the master key, due to master key being set via fuse in factor, encrypted, then destroyed.
 It further helps to reduce any keys to be compromised when other components such as app/kernel being compromised.
 
-Secure enclave is only hardware feature, can't be implemnted as software. It would be difficult, you would need to sandbox it well.(Does not provide same security as software)
+Secure enclave is only hardware feature, can't be implemented as software.
+It would be difficult, you would need to sandbox it well. (Software cannot provide the same security guarantees).
 
 It's important to reduce the time crypto keys stay in memory is so that it reduces window of attack.
 
