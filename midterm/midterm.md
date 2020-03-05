@@ -296,8 +296,21 @@ citecolor: Green
 
 - Multics is hard to use
 - difficult to do anything cool with it
+- usability is a big reason why UNIX took over
 
 ## Activity: Multics Security Evaluation
+
+- Multics is touted as being very secure
+    - ...but is it?
+- in theory:
+    - tamperproofing from rings
+    - complete mediation from ACLs, rings, MLS
+    - verifiability... somehow?
+- in reality: better than UNIX, but still not great
+    - vulnerabilities with exceptions trapping to lower rings
+    - no initial hardware backing for ring transitions (this was later rectified)
+    - only MLS is really MAC, the rest is still DAC (even rings can be changed if we can modify ACL in parent directory)
+    - large codebase, verifiability is difficult
 
 # UNIX (and UNIX-Like) Security
 
