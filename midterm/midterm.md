@@ -462,11 +462,36 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 #### App Installation/Update
 
+If app is already installed then check if it's same certificate, if so then it's an update
+
+If it is a new app and it is sharing UID with same cert then add to existing UID
+
+If it is a new app and it is not sharing UID then assign new UID(initial installation)
+
+Permissions are assigned to UID, so if UID sharing is turned on then the UID gets union of permissions from all apps that use that UID
+
+DSS/App signing allows developer to sign certificate and update app with a key. Several problems with this.
+
 #### Authentication
+
+User provide PIN/PW/Fingerprint
+Associated service(LockSettingsService,Fingerprintservice) makes a request to a specific daemon(gatekeeperd,fingerprintd)
+Daemon sends data to counterpart component(Gatekeeper,Fingerprint) in TEE, then responds with AuthToken with the user’s SID(secure identifier)
+Daemon passes the AuthToken to the keystore service
+Keystore service the token to Keymaster to verify using the key shared with Gatekeeper. Uses the timestamp to allow an app to use the key
 
 #### Trusty TEE
 
+Synonymous to Secure Enclave from IOS.
+Trusty TEE is an OS on chip, it is isolated from the rest of the system in terms of hardware and software.
+Uses Little Kernel OS, it transfer data between secure environment between itself and Android via Linux kernel driver.
+Responsible to provide cryptographic functions. Keymaster and gatekeeper lies in the trusty environment.
+Provides a trusted execution environment for Android TCB
+Key only exists inside of TEE.
+
 ## iOS
+
+Talked about Secure Enclave in the activity.
 
 ## Activity (Will): Comparing Android, iOS, and Desktop
 
