@@ -174,6 +174,7 @@ citecolor: Green
     - all access attempts to the box are mediated by the policy
     - teller + client
     - teller + locksmith
+    - MAC: client cannot permit others to look at their box
 - tamperproofing
     - the system cannot be tampered with unless a corrupt bank officer works with a locksmith
 - verifiability
