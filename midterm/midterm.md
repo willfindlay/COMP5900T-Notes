@@ -186,8 +186,16 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## Activity: Comparing Android, iOS, and Desktop
 
+### Tri Activity-Secure Enclave
 
+Hardware-based key manager isolated from main processor. Responsible for cryptography functions and key storing. Keys can never leave secure enclave.
 
+With keys being stored on Secure Enclave, it helps to further their goal of privacy. So when there are criminal cases, gov can't ask Apple for key to unlock phone.
+It further helps to reduce any keys to be compromised when other components such as app/kernel being compromised.
+
+Secure enclave is only hardware feature, can't be implemnted as software. It would be difficult, you would need to sandbox it well.(Does not provide same security as software)
+
+It's important to reduce the time crypto keys stay in memory is so that it reduces window of attack.
 
 <!-- References -->
 \clearpage
