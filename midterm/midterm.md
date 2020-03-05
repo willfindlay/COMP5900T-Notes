@@ -241,15 +241,36 @@ citecolor: Green
 
 ## Segment Descriptor Word
 
-![Segment descriptor word layout, accompanied by an example.](./figs/sdw.png){width=80%}
+- lives in descriptor segment for each process
+- each SDW describes a segment the process has access to
+    - address
+    - length
+    - ring brackets (rwe)
+    - ACL (rwe)
+    - gate transitions
+
+![Segment descriptor word layout, accompanied by an example. In this example, the process can only execute the segment if it is running in ring 8 or lower. If it is running in a ring lower than 3, it must transition to execute. If it is running in a ring higher than 8, it must transition, but only if a gate allows it to do so. It cannot read or write to the segment due to its ACL.](./figs/sdw.png){width=80%}
+
+\FloatBarrier
 
 ## Multics Access Control
 
 #### ACLs
 
+- each object (segment) has an ACL that specified allowed operations for subjects (processes)
+- entries are
+    - `r` read
+    - `w` write
+    - `e` execute (`x` in UNIX)
+- ACL entry for a process is included in its SDW for the segment
+
 #### Protection Rings
 
-- ring 0 (most privileged) to ring 64 (least privileged)
+- ring 0 (most privileged) to ring 63 (least privileged)
+- Multics only implements first 8 (hardware restrictions)
+- processes can transition rings
+    - low priv to high priv, need to go through gate
+    - high priv to low priv, always allowed
 
 #### MLS (Multi-Level Security)
 
