@@ -161,6 +161,25 @@ citecolor: Green
 ## Activity: Design a Reference Monitor for a Real Life Situation
 
 - safety deposit box
+    - boxes are kept in a secure area
+    - the secure area is under surveillance
+    - need two keys to open (teller + client)
+    - clients must provide documentation to prove their identity
+    - once box is open, client moves to *another* secure area (without surveillance) to view contents
+    - teller cannot see contents of box (only client may know its contents)
+    - once client is finished, box is returned to vault, where teller and client lock it up again
+    - only trusted vendors (locksmiths) may perform maintenance on the lock
+    - locksmiths must be accompanies by bank personnel
+- complete mediation
+    - all access attempts to the box are mediated by the policy
+    - teller + client
+    - teller + locksmith
+- tamperproofing
+    - the system cannot be tampered with unless a corrupt bank officer works with a locksmith
+- verifiability
+    - banks must conform to certain standards specified by the industry
+    - entire process is simple enough such that it may be verified
+    - who cares about verifiability? the banks, their customers (and potential customers), and insurance companies
 
 # Multics
 
