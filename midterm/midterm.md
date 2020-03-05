@@ -49,8 +49,8 @@ citecolor: Green
 #### General-Purpose
 
 - conventional OSes -> run lots of programs on a variety of hardware
-- difficult to secure -> verifiability was a problem
-- why do we use these? absract hardware, don't want to reinvent the wheel
+- difficult to secure -> verifiability is a problem (and you could argue verifiability problem is getting worse)
+- why do we use these? abstract hardware, don't want to reinvent the wheel
     - writing a new task-specific operating system for every machine, use case, is an exercise in futility
     - we trade security guarantees for features
 
