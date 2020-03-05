@@ -398,6 +398,8 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## SELinux
 
+- implements FLASK model (a MAC model) in Linux with LSM
+
 ## Activity: Compare Custom SELinux Policy with Real SELinux Policy
 
 # UNIX Sandboxing
@@ -411,6 +413,31 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 ## Acitivity: Compare the Three Alternatives
 
 # Mobile OS Security
+
+## Crypto Stuff
+
+#### Symmetric Key
+
+- share key over some secure channel (out-of-band) or with key sharing scheme
+    - e.g. DH key agreement
+- encrypt and decrypt with that key
+- problems?
+    - no non-repudiation
+    - hard to share or agree on keys (DH makes it better, but it has weaknesses)
+
+#### Asymmetric Key (Pub, Priv)
+
+- encrypt message with their public key
+- they decrypt with their private key
+- problems?
+    - PKI necessary
+    - distribute keys
+    - figure out if public key is authentic
+
+#### Digital Signatures (with Asymmetric)
+
+- sign the hash of the message with your private key
+- others verify with your public key
 
 ## Android
 
