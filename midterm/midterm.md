@@ -201,7 +201,68 @@ citecolor: Green
 
 # Multics
 
+- first modern OS
+- invented lots of new concepts in OS design
+    - segmented virtual memory
+    - shared memory
+    - hierarchical filesystems
+    - online reconfiguration
+- invented lots of new concepts in *secure* OS design
+    - reference monitor
+    - ACLs
+    - ring protection
+    - protection domain transactions
+    - MLS security policies
+- everything is:
+    - a directory;
+    - a subdirectory; or
+    - a segment
+
+## Segments
+
+- units of memory
+- stored in:
+    - process' context (things like DRAM)
+    - secondary storage (things like tapes, disks)
+- each process has a descriptor segment
+    - what segments it has access to (segment descriptor words)
+    - to add a segment to descriptor, specify its path (need permission)
+
+## Answering Service
+
+- authenticates users on behalf of the supervisor
+- load password SDW into its own segment
+- check for a match, create user process with code and data segments for that user
+
+## Supervisor
+
+- runs in ring 0 and ring 1
+- implements all security sensitive functionality
+
+## Segment Descriptor Word
+
+![Segment descriptor word layout, accompanied by an example.](./figs/sdw.png){width=80%}
+
+## Multics Access Control
+
+#### ACLs
+
+#### Protection Rings
+
+- ring 0 (most privileged) to ring 64 (least privileged)
+
+#### MLS (Multi-Level Security)
+
+- mandatory access control
+- subjects, objects have secrecy level
+    - subjects can write to objects that have secrecy level $\ge$ their secrecy level
+    - subjects can read from objects that have secrecy level $\le$ their secrecy level
+    - subjects can read from and write to objects that have secrecy level $\equiv$ their secrecy level
+
 ## Activity: Using Multics
+
+- Multics is hard to use
+- difficult to do anything cool with it
 
 ## Activity: Multics Security Evaluation
 
