@@ -283,6 +283,8 @@ citecolor: Green
     - below R1 exclusive, we can execute but must transition to $r'$
     - between R1 and R2 inclusive, we can execute without transition
     - below R3 inclusive, we can execute if and only if a gate allows us to transition to $r'$
+- transitioning back to original ring is also mediated
+    - ring return gates
 
 #### MLS (Multi-Level Security)
 
@@ -399,8 +401,25 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 ## SELinux
 
 - implements FLASK model (a MAC model) in Linux with LSM
+- how policy works?
+    - default policy
+    - enforcing mode or permissive mode (permissive logs violations but does not enforce)
+    - can configure policy with booleans
+- every subject has a label, every object has a label
+    - policy is defined as a whitelist on labels
+    - everything else is denied by default
+- SELinux implements
+    - label/role type enforcement
+    - MCS (multi-category security)
+    - MLS (multi-level security)
 
 ## Activity: Compare Custom SELinux Policy with Real SELinux Policy
+
+- SELinux policy is **complicated**
+    - a lot of factors to consider
+- they define their own language for defining policy
+    - difficult to use, need to read documentation
+- a lot of experience required to write policy, better to just use booleans
 
 # UNIX Sandboxing
 
