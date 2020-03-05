@@ -425,11 +425,37 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## OpenBSD `pledge(2)`
 
+Coarse-grained
+Groups system calls into groups(stdio,rcpath,etc)
+Can still make meaningless policies, like pledging wpath because with wpath you can write anywhere on system
+If exec is allowed, then we can disable pledge[downfall]
+
 ## Linux `seccomp(2)` and `seccomp-bpf(2)`
+
+Fine-grained
+Harder to use than pledge
+Process make seccomp syscalls, and go into secure computing mode
+Seccomp only allows 4 syscalls originally, read,write,sigreturn,exit
+
+To allow more interactions and whitelisting you need seccomp-bpf
+Use BPF to define seccomp filters
+Whitelisting can be error prone. Like denying open but openat can do the same thing as open
 
 ## FreeBSD `capsicum(4)`
 
+Somewhere between fine-grained and coarse-grained
+Doesn't allow processes to have access to global namespace
+System call use cap_enter(2) to start worker
+Processes in capability mode can only open files relative to directories they have permission to access[CAP_READ,CAP_WRITE,CAP_LOOKUP]
+Minimal effort to use
+
 ## Acitivity: Compare the Three Alternatives
+
+### Capsicum
+
+We did a web server using capsicum.
+During the main loop, this is where setup occurs: Start server, bind ip/port, read config files, open resources, and most importantly defines capabilities on objects
+Once you call cap_enter[Everytime there is a new connection], we go into worker loop, lose access to global namespace, bound to capabilities object.
 
 # Mobile OS Security
 
