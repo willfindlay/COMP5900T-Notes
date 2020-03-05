@@ -158,6 +158,23 @@ citecolor: Green
     - usually augments DAC
     - administrator sets policy, cannot be changed by users
 
+#### Access Matrix, ACLs, Cap-Lists
+
+- access matrix defines
+    - $x$ is objects
+    - $y$ is subjects
+    - cells of allowed operations
+- access matrix is abstract
+    - in reality, implemented as ACLs or cap-lists, not both
+    - sparse matrix, inefficient memory usage
+    - ACLs can be derived from cap-lists, cap-lists from ACLs -> no need for both
+- ACLs
+    - rows of access matrix
+    - define what objects the subject can interact with in what way
+- cap-lists
+    - cols of access matrix
+    - define what subjects can perform what operations on the object
+
 ## Activity: Design a Reference Monitor for a Real Life Situation
 
 - safety deposit box
@@ -274,6 +291,12 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 # Mobile OS Security
 
 ## Android
+
+#### App Installation/Update
+
+#### Authentication
+
+#### Trusty TEE
 
 ## iOS
 
