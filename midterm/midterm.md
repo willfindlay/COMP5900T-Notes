@@ -257,9 +257,9 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## iOS
 
-## Activity: Comparing Android, iOS, and Desktop
+## Activity (Will): Comparing Android, iOS, and Desktop
 
-### Tri Activity-Secure Enclave
+## Activity (Tri): Secure Enclave
 
 Hardware-based key manager isolated from main processor. Responsible for cryptography functions and key storing. Keys can never leave secure enclave.
 
