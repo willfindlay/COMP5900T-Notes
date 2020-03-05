@@ -423,9 +423,9 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 # UNIX Sandboxing
 
-## Linux `seccomp(2)` and `seccomp-bpf(2)`
-
 ## OpenBSD `pledge(2)`
+
+## Linux `seccomp(2)` and `seccomp-bpf(2)`
 
 ## FreeBSD `capsicum(4)`
 
