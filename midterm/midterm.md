@@ -268,9 +268,16 @@ citecolor: Green
 
 - ring 0 (most privileged) to ring 63 (least privileged)
 - Multics only implements first 8 (hardware restrictions)
-- processes can transition rings
-    - low priv to high priv, need to go through gate
-    - high priv to low priv, always allowed
+- RW access
+    - specified by R1 R2 ring brackets
+    - below R1 implies RW
+    - between R1 and R2 inclusive, R-only
+    - above R2, no access
+- processes can transition rings to execute
+    - specified by R1 R2 R3 ring brackets
+    - below R1 exclusive, we can execute but must transition to $r'$
+    - between R1 and R2 inclusive, we can execute without transition
+    - below R3 inclusive, we can execute if and only if a gate allows us to transition to $r'$
 
 #### MLS (Multi-Level Security)
 
