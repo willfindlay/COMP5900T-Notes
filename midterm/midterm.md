@@ -77,17 +77,90 @@ citecolor: Green
 
 ## Definition of Secure OS
 
+- a secure OS satisfies the reference monitor model
+    - complete mediation
+    - tamperproofing
+    - verifiability
+- trusted computing base
+    - set of programs (kernel and some userspace) that we implicitly trust
+    - if trust of TCB is broken, system is compromised
+    - e.g. Linux kernel, passwd program, etc.
+
 ## Reference Monitor
+
+- defines sufficient and necessary properties for a system to securely enforce access control on security sensitive operations
+- main components
+    - interface
+    - authorization module
+    - policy store
+
+![The reference monitor model.](./figs/refmon.png){width=80%}
+
+\FloatBarrier
+
+#### Interface
+
+- defines queries to the reference monitor
+- e.g. system calls
+
+#### Authorization Module
+
+- take interface inputs, convert to query for the policy store
+- query used to check authorization
+- map PID to subject label, object references to object label
+
+#### Policy Store
+
+- holds protection state, labeling state, transition state
+    - define queries for each
+- answer queries from authorization module
+
+## Reference Monitor Desirable Properties
 
 #### Tamperproofing
 
+- reference monitor resistance to tampering
+- i.e. unprivileged users cannot mess with the functionality of the reference monitor
+- criteria:
+    - how does the system protect the reference monitor from modification?
+    - does the system protect the TCB?
+
 #### Complete Mediation
+
+- reference monitor mediates all security sensitive operations
+    - i.e. check subject capabilities before allowing them to operate on objects
+- check permissions for system calls
+- criteria:
+    - how does the reference monitor mediate security sensitive operations?
+    - does the reference monitor mediate security sensitive operations on all objects?
 
 #### Verifiability
 
+- reference monitor is verifiability correct
+- we can verify
+    - complete mediation
+    - tamperproofing
+- in practice, verifiability is difficult to achieve
+- criteria:
+    - what is the basis for TCB correctness?
+    - does protection system enforce security goals?
+
 ## Access Control Fundamentals
 
+#### DAC vs MAC
+
+- DAC
+    - discretionary
+    - users set permissions on objects they own
+    - feel free to shoot yourself in the foot
+- MAC
+    - mandatory
+    - usually augments DAC
+    - administrator sets policy, cannot be changed by users
+
 ## Activity: Design a Reference Monitor for a Real Life Situation
+
+- safety deposit box
 
 # Multics
 
