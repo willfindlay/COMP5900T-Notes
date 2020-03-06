@@ -490,32 +490,43 @@ Once you call cap_enter[Everytime there is a new connection], we go into worker 
 
 #### App Installation/Update
 
-If app is already installed then check if it's same certificate, if so then it's an update
-
-If it is a new app and it is sharing UID with same cert then add to existing UID
-
-If it is a new app and it is not sharing UID then assign new UID(initial installation)
-
-Permissions are assigned to UID, so if UID sharing is turned on then the UID gets union of permissions from all apps that use that UID
-
-DSS/App signing allows developer to sign certificate and update app with a key. Several problems with this.
+- how it works
+    - if app is already installed then check if it's same certificate, if so then it's an update
+    - if it is a new app and it is sharing UID with same cert then add to existing UID
+    - if it is a new app and it is not sharing UID then assign new UID (initial installation)
+    - permissions are assigned to UID, so if UID sharing is turned on then the UID gets union of permissions from all apps that use that UID
+- app signing
+    - developers sign their own certificates
+    - use certificates to sign manifest, add file signatures to manifest
+- problems?
+    - developers using publicly available keys
+    - signature stripping attack (catch signature, strip, re-sign)
+    - attacker can flag downgrade as an upgrade (but they still need the key to sign the app)
+    - trust-on-first-use is not a great model (PKI would be better, but difficult to change this after the fact)
+    - no way to enforce certificate expiration, revocation
 
 #### Authentication
 
-User provide PIN/PW/Fingerprint
-Associated service(LockSettingsService,Fingerprintservice) makes a request to a specific daemon(gatekeeperd,fingerprintd)
-Daemon sends data to counterpart component(Gatekeeper,Fingerprint) in TEE, then responds with AuthToken with the user’s SID(secure identifier)
-Daemon passes the AuthToken to the keystore service
-Keystore service the token to Keymaster to verify using the key shared with Gatekeeper. Uses the timestamp to allow an app to use the key
+<!--
+- user provide PIN or biometrics
+- associated service (LockSettingsService, Fingerprintservice) makes a request to a specific daemon (gatekeeperd, fingerprintd)
+- daemon sends data to counterpart component (Gatekeeper, Fingerprint) in TEE, then responds with AuthToken with the user's SID (secure identifier)
+- daemon passes the AuthToken to the keystore service
+- keystore service the token to Keymaster to verify using the key shared with Gatekeeper
+ - uses the timestamp to allow an app to use the key
+ -->
 
 #### Trusty TEE
 
-Synonymous to Secure Enclave from IOS.
-Trusty TEE is an OS on chip, it is isolated from the rest of the system in terms of hardware and software.
-Uses Little Kernel OS, it transfer data between secure environment between itself and Android via Linux kernel driver.
-Responsible to provide cryptographic functions. Keymaster and gatekeeper lies in the trusty environment.
-Provides a trusted execution environment for Android TCB
-Key only exists inside of TEE.
+- similar to iOS secure enclave
+- SoC (system on a chip), separate OS that runs on a separate processor
+    - isolated from the rest of the system
+    - exposes an API, main OS uses a driver to interact with it
+- Trusty TEE is **not Linux**
+    - it is based on Little Kernel
+- houses the entire TCB of the Android device
+    - cryptographic primitives, keymaster, gatekeeper, keystore
+- keys stay in TEE
 
 ## iOS
 
