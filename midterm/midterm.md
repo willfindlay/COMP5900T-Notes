@@ -423,39 +423,49 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 # UNIX Sandboxing
 
+- general pattern
+    - main loop, not isolated
+    - work loop, become isolated
+- system call interposition is common
+- pitfalls often include
+    - coarse granularity of policy
+    - incomplete policy (e.g. `open` but not `openat`)
+    - mistakes by developers
+    - developers needing to modify their applications (no transparency)
+    - accidental ability to escape sandbox
+
 ## OpenBSD `pledge(2)`
 
-Coarse-grained
-Groups system calls into groups(stdio,rcpath,etc)
-Can still make meaningless policies, like pledging wpath because with wpath you can write anywhere on system
-If exec is allowed, then we can disable pledge[downfall]
+- place system calls intro groups
+    - e.g. `stdio` for `read`, `write`, etc.
+- process "pledges" itself to only make calls from specified groups
+- allowing `execve` family calls allows us to circumvent pledge by simply executing new code
+- very coarse-grained option, not really effective at sandboxing
 
 ## Linux `seccomp(2)` and `seccomp-bpf(2)`
 
-Fine-grained
-Harder to use than pledge
-Process make seccomp syscalls, and go into secure computing mode
-Seccomp only allows 4 syscalls originally, read,write,sigreturn,exit
-
-To allow more interactions and whitelisting you need seccomp-bpf
-Use BPF to define seccomp filters
-Whitelisting can be error prone. Like denying open but openat can do the same thing as open
+- process makes `seccomp` call
+- only allow 4 system calls by default
+    - `read`
+    - `write`
+    - `sigreturn`
+    - `exit`
+- other system calls can be whitelisted
+    - use classic BPF programs to do this (`seccomp-bpf`)
+    - filter based on system call, even system call arguments
+- problems?
+    - holes in policy (e.g. allowing `openat` but not `open`)
+    - TOCTOU race conditions in BPF program (i.e. if you write a filter based on file path)
 
 ## FreeBSD `capsicum(4)`
 
-Somewhere between fine-grained and coarse-grained
-Doesn't allow processes to have access to global namespace
-System call use cap_enter(2) to start worker
-Processes in capability mode can only open files relative to directories they have permission to access[CAP_READ,CAP_WRITE,CAP_LOOKUP]
-Minimal effort to use
-
-## Acitivity: Compare the Three Alternatives
-
-### Capsicum
-
-We did a web server using capsicum.
-During the main loop, this is where setup occurs: Start server, bind ip/port, read config files, open resources, and most importantly defines capabilities on objects
-Once you call cap_enter[Everytime there is a new connection], we go into worker loop, lose access to global namespace, bound to capabilities object.
+- prepare capabilities
+    - assign capabilities to objects before we enter capability mode
+    - each object gets a unique token, capabilities are predefined
+- make `cap_enter` call
+- once we are in capability mode, lose access to global namespaces
+    - we can only access paths we already have capability to access
+- probably the most sensible option
 
 # Mobile OS Security
 
@@ -507,6 +517,10 @@ Once you call cap_enter[Everytime there is a new connection], we go into worker 
 
 #### Authentication
 
+- authentication services run in Trusty TEE
+    - fingerprintd for biometric, gatekeeperd for PIN
+- daemons pass data to specific component in Trusty TEE, replies to user with AuthToken
+
 <!--
 - user provide PIN or biometrics
 - associated service (LockSettingsService, Fingerprintservice) makes a request to a specific daemon (gatekeeperd, fingerprintd)
@@ -528,13 +542,42 @@ Once you call cap_enter[Everytime there is a new connection], we go into worker 
     - cryptographic primitives, keymaster, gatekeeper, keystore
 - keys stay in TEE
 
+#### SELinux in Android
+
 ## iOS
 
-Talked about Secure Enclave in the activity.
+#### Hardened WebKit JIT Mapping
 
-<!-- TODO: strop refactor Tri stuff -->
+- JIT = just in time compilation
+    - great for performance
+    - but you can't sign it (because code is generated dynamically)
+    - so what do we do?
+- make sure code can't be tampered with!
+    - have a memory region marked execute-only
+    - have another mapping to same region marked readable and writable
+    - lose the mapping of the writable location, but keep a special `memcpy` function that keeps track for us
+    - now attacker doesn't know where the writable location is, but JIT compiler still can do its job
 
-## Activity (Will): Comparing Android, iOS, and Desktop
+#### Secure Enclave Processor
+
+- SoC solution, similar to Android Trusty TEE
+- keeps track of user keybag
+    - four key types, all ephemeral and session-bound to varying degrees
+    - all keys wrapped with master key
+- master key
+    - derived from SEP UID and use passcode
+    - used to encrypt/decrypt all user keys
+    - once key is set, encrypt it, lose the original
+- SEP UID
+    - set via a fuse in factory, non-mutable
+    - important takeaway: **Apple has no access to user keys**, total privacy
+
+#### Synchronizing Secrets
+
+- I will maybe add this later
+
+<!--
+## Activity (Will): Comparing Android, iOS, and Desktop Authentication
 
 ## Activity (Tri): Secure Enclave
 
@@ -549,6 +592,7 @@ Secure enclave is only hardware feature, can't be implemented as software.
 It would be difficult, you would need to sandbox it well. (Software cannot provide the same security guarantees).
 
 It's important to reduce the time crypto keys stay in memory is so that it reduces window of attack.
+-->
 
 <!-- References -->
 \clearpage
