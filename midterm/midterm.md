@@ -30,12 +30,14 @@ citecolor: Green
 \tableofcontents
 
 <!-- List of figs, tables, listings -->
+<!--
 \newpage
 \listoffigures
 \newpage
 \listoftables
 \newpage
 \lstlistoflistings
+-->
 
 <!-- Setup the rest of the document -->
 \newpage
