@@ -460,6 +460,8 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 ## Android
 
+<!-- TODO: refactor Tri stuff -->
+
 #### App Installation/Update
 
 If app is already installed then check if it's same certificate, if so then it's an update
@@ -492,6 +494,8 @@ Key only exists inside of TEE.
 ## iOS
 
 Talked about Secure Enclave in the activity.
+
+<!-- TODO: strop refactor Tri stuff -->
 
 ## Activity (Will): Comparing Android, iOS, and Desktop
 
