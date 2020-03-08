@@ -596,5 +596,67 @@ It would be difficult, you would need to sandbox it well. (Software cannot provi
 It's important to reduce the time crypto keys stay in memory is so that it reduces window of attack.
 -->
 
+# IoT OS Security
+
+## RIOT: an Open Source Operating System for Low-end Embedded Devices in the IoT
+
+- IOT devices usually don't have Memory Management Unit or Memory Processing Unit
+
+- requirements for IOT OS
+   - memory efficiency
+   - energy efficiency
+   - reactivity
+   
+- RIOT Princicples
+   - Network Standards: IETF protocols
+   - System Standards: the ANSI C standard (C99), to take full advantage of the largest pool of 3rd party software
+   - Unified APIs
+   - Modularity
+   - Static Memory
+   - Vendor & Technology Independence
+   - Open & Inclusive Open Source Community
+
+### THE RIOT KERNEL
+
+- Multi-Threading
+- Scheduling & Real-Time Properties
+
+### HARDWARE ABSTRACTION
+
+- CPU Abstraction
+   - Core abstraction
+   - Generic Peripheral API
+- Board Abstraction
+- Driver Model
+- Sensor/Actuator Abstraction
+
+### SYSTEM BOOTING
+
+### POWER MANAGEMENT
+
+### TIMER SUBSYSTEM
+
+### NETWORKING SUBSYSTEM
+
+- uses netdev and sock
+- Sending and receiving
+- Transceiver configuration & initialization
+- Transceiver event handling
+
+### EXTERNAL LIBRARIES
+
+### RIOT APPLICATION PROGRAMMING INTERFACES
+
+### TOOLS & CODE QUALITY WORKFLOW
+
+- Debugging and Testing Tools
+   - Shell
+   - RIOT native
+- Standard Workflow
+- Code Quality Management
+
+###  THE RIOT OPEN SOURCE COMMUNITY
+
+
 <!-- References -->
 \clearpage
