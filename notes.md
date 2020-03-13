@@ -606,6 +606,8 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 - `pkg` (imports third party components)
 - `sys/net` (system libraries $\rightarrow$ crypto, networking, filesystems, etc.)
 
+![Riot TCB architecture.](./figs/riot.png)
+
 ### RIOT Kernel
 
 - provides
@@ -621,11 +623,15 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
     - easier code import
     - logical task separation
     - task prioritization
-- what is the overhead?
+- memory overhead
     - memory for thread control block
     - memory for stack space
     - memory for CPU registers
-- light-weight synchronization
+- CPU overhead
+    - saving and restoring thread contexts
+    - scheduler runtime
+    - IPC module runtime
+- light-weight IPC and synchronization
     - mutex, semaphore, messaging
     - optional kernel submodule, compiled as needed
 - multi-threading is optional
@@ -633,7 +639,82 @@ Finally, I give verifiability a grade of 20%. I think Jaeger absolutely nails it
 
 #### Scheduling
 
+- run-to-completion
+    - higher priority active thread runs, interrupted by IRQs (paper calls them ISRs)
+- system only wakes up when something is happening (tickless, not based on CPU time)
+
+### Hardware Abstraction
+
+- MCU + external components (sensors, actuators)
+- all hardware dependent code goes into three blocks:
+    - `boards` (1 per build)
+    - `cpu` (1 per build)
+    - `drivers` (0 or more per build)
+
+#### CPU Abstraction
+
+- CPU hierarchy
+    1. arch
+    1. fam
+    1. type
+    1. model
+- generic peripheral API
+    - increase code portability by unifying peripheral access
+
+#### Board Abstraction
+
+- select and configure CPU in use (and its peripherals)
+- select and configure drivers available for board components
+- initialization code
+- tooling (API) for board programming
+
+#### Driver Model
+
+- software for controlling CPU-external components
+- goals
+    - independence from board
+    - allow multiple instances
+    - implement common high-level APIs
+
+<!--
+
+Eh this stuff is too long I'm just gonna read it
+
+#### Sensors/Actuators Abstraction
+
+### System Booting
+
+### Power Management
+
+### Timer Subsystem
+
+### Networking Subsystem
+
+### External Libraries
+
+### RIOT API
+
+### Open Source Community
+
+-->
+
+### RIOT Security
+
+- hmm these things don't seem great...
+    - everything in C (no memory safety) $\rightarrow$ bugs?
+    - rebuilding OS from scratch without third party libraries $\rightarrow$ bugs?
+    - no sandboxing
+    - no ASLR
+    - no user separation
+    - no ACL
+    - no entropy for cRNG
+
 ## IoT Security Talk by ARM CTO
+
+- IoT security is hard
+- ultimately perfect security requires hardware backing
+- security requirements vary **significantly** based on IoT application
+    - security in a car is different than security in a watch
 
 <!-- References -->
 \clearpage
